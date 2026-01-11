@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>부산 갈맷길 100M | 참가신청</title>
+    <meta name="description" content="부산 갈맷길 100M 참가 신청 및 현황 조회">
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Daum 우편번호 API -->
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="nav-desktop glass">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <img src="assets/main_logo.png" alt="갈맷길 100M" onerror="this.style.display='none'">
+                <span class="gradient-text">갈맷길 100M</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">홈</a></li>
+                <li><a href="course.html">코스</a></li>
+                <li><a href="schedule.html">일정</a></li>
+                <li><a href="registration.html">참가신청</a></li>
+                <li><a href="notices.html">공지사항</a></li>
+                <li><a href="community.html">커뮤니티</a></li>
+                <li><a href="gallery.html">갤러리</a></li>
+                <li><a href="results.html">결과조회</a></li>
+            </ul>
+            <button class="nav-hamburger">☰</button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu">
+        <a href="index.html">🏠 홈</a>
+        <a href="course.html">🗺️ 코스</a>
+        <a href="schedule.html">📅 일정</a>
+        <a href="registration.html">📝 참가신청</a>
+        <a href="notices.html">📢 공지사항</a>
+        <a href="community.html">👥 커뮤니티</a>
+        <a href="gallery.html">📸 갤러리</a>
+        <a href="results.html">🏆 결과조회</a>
+    </div>
+
+    <!-- Cheer Marquee -->
+    <div class="cheer-marquee">
+        <div class="cheer-marquee-inner marquee"></div>
+    </div>
+
+    <!-- Main Content -->
+    <main style="padding-top:120px; min-height:100vh;">
+        <section style="max-width:600px; margin:0 auto; padding:40px 24px;">
+            <h1 style="font-size:2.5rem; text-align:center; margin-bottom:48px;" class="gradient-text">참가 신청</h1>
+
+            <!-- Tab Buttons -->
+            <div class="tab-buttons">
+                <button class="tab-btn active" data-tab="register"
+                    style="flex:1; min-width:140px; padding:24px 16px; background:linear-gradient(135deg, #1e293b, #334155); border:2px solid var(--neon-red); border-radius:16px; cursor:pointer; transition:all 0.3s;">
+                    <div style="font-size:3rem; margin-bottom:12px;">📝</div>
+                    <div style="font-weight:700; font-size:1.125rem; color:#fff;">신청서 작성</div>
+                    <div style="font-size:0.875rem; color:var(--slate-400); margin-top:4px;">폼으로 신청하기</div>
+                </button>
+                <button class="tab-btn" data-tab="kakao"
+                    style="flex:1; min-width:140px; padding:24px 16px; background:linear-gradient(135deg, #fee500, #ffd700); border:2px solid #fee500; border-radius:16px; cursor:pointer; transition:all 0.3s;">
+                    <div style="font-size:3rem; margin-bottom:12px;">💬</div>
+                    <div style="font-weight:700; font-size:1.125rem; color:#3c1e1e;">카카오톡 신청</div>
+                    <div style="font-size:0.875rem; color:#5c3c3c; margin-top:4px;">오픈채팅방 참여</div>
+                </button>
+                <button class="tab-btn" data-tab="status"
+                    style="flex:1; min-width:140px; padding:24px 16px; background:linear-gradient(135deg, #1e293b, #334155); border:2px solid transparent; border-radius:16px; cursor:pointer; transition:all 0.3s;">
+                    <div style="font-size:3rem; margin-bottom:12px;">🔍</div>
+                    <div style="font-weight:700; font-size:1.125rem; color:#fff;">신청현황 조회</div>
+                    <div style="font-size:0.875rem; color:var(--slate-400); margin-top:4px;">기존 신청 확인</div>
+                </button>
+            </div>
+
+            <!-- Tab Content: KakaoTalk -->
+            <div id="tab-kakao" class="tab-content" style="display:none;">
+                <div class="glass-card" style="padding:32px; text-align:center;">
+                    <h2 style="font-size:1.25rem; margin-bottom:24px;">💬 카카오톡으로 신청하기</h2>
+                    <p style="color:var(--slate-400); margin-bottom:24px;">
+                        아래 버튼을 클릭하여 카카오톡 오픈채팅방에 참여하세요.<br>
+                        채팅방에서 참가 신청 안내를 받으실 수 있습니다.
+                    </p>
+                    <a id="kakao-link" href="#" target="_blank"
+                        style="display:inline-block; padding:16px 48px; background:#fee500; color:#3c1e1e; font-weight:700; font-size:1.125rem; border-radius:12px; text-decoration:none; transition:all 0.3s;">
+                        카카오톡 오픈채팅방 참여하기
+                    </a>
+                    <p style="color:var(--slate-500); font-size:0.875rem; margin-top:16px;">
+                        ※ 카카오톡 앱이 설치되어 있어야 합니다
+                    </p>
+                </div>
+            </div>
+
+            <!-- Tab Content: Registration Form -->
+            <div id="tab-register" class="tab-content">
+                <div class="glass-card" style="padding:32px;">
+                    <h2 style="font-size:1.25rem; margin-bottom:24px; text-align:center;">📝 신청서 작성</h2>
+                    <form id="registration-form" style="display:flex; flex-direction:column; gap:16px;">
+                        <div>
+                            <label
+                                style="display:block; font-size:0.875rem; color:var(--slate-400); margin-bottom:8px;">이름
+                                *</label>
+                            <input type="text" name="name" required class="form-input" placeholder="홍길동">
+                        </div>
+                        <div>
+                            <label
+                                style="display:block; font-size:0.875rem; color:var(--slate-400); margin-bottom:8px;">생년월일
+                                *</label>
+                            <input type="date" name="birth" required class="form-input">
+                        </div>
+                        <div>
+                            <label
+                                style="display:block; font-size:0.875rem; color:var(--slate-400); margin-bottom:8px;">연락처
+                                *</label>
+                            <input type="tel" name="phone" required class="form-input" placeholder="010-0000-0000">
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                            <div>
+                                <label
+                                    style="display:block; font-size:0.875rem; color:var(--slate-400); margin-bottom:8px;">코스
+                                    *</label>
+                                <select name="course" required class="form-input">
+                                    <option value="100M">100M</option>
+                                    <option value="50M">50M</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label
+                                    style="display:block; font-size:0.875rem; color:var(--slate-400); margin-bottom:8px;">혈액형</label>
+                                <select name="bloodType" class="form-input">
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- 비상연락처 -->
+                        <div>
+                            <label
+                                style="display:block; font-size:0.875rem; color:var(--slate-400); margin-bottom:8px;">비상연락처
+                                이름</label>
+                            <input type="text" name="emergencyContact" class="form-input" placeholder="김부모">
+                        </div>
+                        <div>
+                            <label
+                                style="display:block; font-size:0.875rem; color:var(--slate-400); margin-bottom:8px;">비상연락처
+                                번호</label>
+                            <input type="tel" name="emergencyPhone" class="form-input" placeholder="010-0000-0000">
+                        </div>
+
+                        <!-- 주소 입력 (선택사항) -->
+                        <div>
+                            <label
+                                style="display:block; font-size:0.875rem; color:var(--slate-400); margin-bottom:8px;">주소
+                                (선택)</label>
+                            <div style="display:flex; gap:8px; margin-bottom:8px;">
+                                <input type="text" name="postcode" id="postcode" class="form-input" placeholder="우편번호"
+                                    readonly style="flex:1;">
+                                <button type="button" onclick="searchPostcode()" class="btn-primary"
+                                    style="padding:12px 16px; white-space:nowrap;">우편번호 검색</button>
+                            </div>
+                            <input type="text" name="address" id="address" class="form-input" placeholder="기본주소"
+                                readonly style="margin-bottom:8px;">
+                            <input type="text" name="addressDetail" class="form-input" placeholder="상세주소 입력">
+                        </div>
+
+                        <!-- 기념티 사이즈 (선택사항) -->
+                        <div>
+                            <label
+                                style="display:block; font-size:0.875rem; color:var(--slate-400); margin-bottom:8px;">기념티
+                                사이즈 (선택)</label>
+                            <select name="tshirtSize" class="form-input">
+                                <option value="">선택안함</option>
+                                <option value="XS">XS</option>
+                                <option value="S">S</option>
+                                <option value="M">M</option>
+                                <option value="L">L</option>
+                                <option value="XL">XL</option>
+                                <option value="XXL">XXL</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn-primary" style="margin-top:8px; width:100%;">
+                            신청하기
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tab Content: Status Check -->
+            <div id="tab-status" class="tab-content" style="display:none;">
+                <div class="glass-card" style="padding:32px;">
+                    <h2 style="font-size:1.25rem; margin-bottom:24px; text-align:center;">🔍 신청 현황 조회</h2>
+                    <form id="status-form" style="display:flex; flex-direction:column; gap:16px;">
+                        <div>
+                            <label
+                                style="display:block; font-size:0.875rem; color:var(--slate-400); margin-bottom:8px;">이름</label>
+                            <input type="text" id="status-name" required class="form-input" placeholder="홍길동">
+                        </div>
+                        <div>
+                            <label
+                                style="display:block; font-size:0.875rem; color:var(--slate-400); margin-bottom:8px;">휴대폰
+                                뒷자리 4개</label>
+                            <input type="text" id="status-phone" required maxlength="4" class="form-input"
+                                placeholder="0000">
+                        </div>
+                        <button type="submit" class="btn-primary btn-blue" style="width:100%;">
+                            조회하기
+                        </button>
+                    </form>
+
+                    <div id="status-result" style="margin-top:24px;"></div>
+
+                    <div style="margin-top:32px; padding:16px; background:var(--slate-800); border-radius:12px;">
+                        <p style="font-size:0.875rem; color:var(--slate-400);">
+                            💡 <strong>테스트 조회:</strong><br>
+                            이름: 김철수 / 뒷자리: 1234
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div style="font-weight:700; color:#fff; margin-bottom:8px;">부산 갈맷길 100M</div>
+        <div style="font-size:0.875rem;">© 2026 Busan Galmaetgil 100M. All rights reserved.</div>
+    </footer>
+
+    <!-- Bottom Navigation (Mobile) -->
+    <nav class="bottom-nav">
+        <div class="bottom-nav-inner">
+            <a href="index.html"><span class="icon">🏠</span>홈</a>
+            <a href="course.html"><span class="icon">🗺️</span>코스</a>
+            <a href="schedule.html"><span class="icon">📅</span>일정</a>
+            <a href="registration.html"><span class="icon">📝</span>신청</a>
+            <a href="results.html"><span class="icon">🏆</span>결과</a>
+        </div>
+    </nav>
+
+    <!-- SOS Button -->
+    <button class="location-share-btn">◎</button>
+
+    <script src="js/app.js"></script>
+    <script>
+        // 우편번호 검색
+        function searchPostcode() {
+            new daum.Postcode({
+                oncomplete: function (data) {
+                    document.getElementById('postcode').value = data.zonecode;
+                    document.getElementById('address').value = data.roadAddress || data.jibunAddress;
+                }
+            }).open();
+        }
+
+        // 카카오톡 링크 로드 (Config에서)
+        (async function loadKakaoLink() {
+            const config = await fetchData('getConfig');
+            if (config && config.kakaoLink) {
+                document.getElementById('kakao-link').href = config.kakaoLink;
+            } else {
+                // Mock 모드용 기본 링크
+                document.getElementById('kakao-link').href = 'https://open.kakao.com/o/go8xJLai';
+            }
+        })();
+
+        // Tab Switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update active button
+                document.querySelectorAll('.tab-btn').forEach(b => {
+                    b.classList.remove('active');
+                    b.style.borderColor = 'transparent';
+                    // 카카오톡 탭은 노란색 테두리로
+                    if (b.dataset.tab === 'kakao') {
+                        b.style.borderColor = '#fee500';
+                    }
+                });
+                btn.classList.add('active');
+                if (btn.dataset.tab === 'kakao') {
+                    btn.style.borderColor = '#fee500';
+                } else {
+                    btn.style.borderColor = 'var(--neon-red)';
+                }
+
+                // Show corresponding tab content
+                const tabId = btn.dataset.tab;
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.style.display = 'none';
+                });
+                document.getElementById('tab-' + tabId).style.display = 'block';
+            });
+        });
+
+        // Registration Form
+        document.getElementById('registration-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            if (USE_MOCK) {
+                alert('🎉 참가 신청이 완료되었습니다!\n\n(Mock 모드 - 실제 데이터는 저장되지 않습니다)');
+                e.target.reset();
+            } else {
+                try {
+                    const params = new URLSearchParams(data);
+                    const response = await fetch(`${API_URL}?action=register&${params.toString()}`, {
+                        method: 'POST'
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        alert('🎉 참가 신청이 완료되었습니다!\n\n' + result.message);
+                        e.target.reset();
+                    } else {
+                        alert('❌ 신청 오류: ' + (result.error || '알 수 없는 오류'));
+                    }
+                } catch (err) {
+                    alert('❌ 네트워크 오류가 발생했습니다. 다시 시도해주세요.');
+                    console.error('Registration error:', err);
+                }
+            }
+        });
+
+        // Status Check Form
+        let currentStatusInfo = null;
+
+        document.getElementById('status-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('status-name').value;
+            const phone4 = document.getElementById('status-phone').value;
+            const resultDiv = document.getElementById('status-result');
+
+            resultDiv.innerHTML = '<p style="text-align:center; color:var(--slate-400);">조회 중...</p>';
+
+            const result = await checkRegistrationStatus(name, phone4);
+            currentStatusInfo = result;
+
+            if (result.found) {
+                // 상태별 색상
+                let statusColor = 'var(--green-500)';
+                let statusBg = 'rgba(34, 197, 94, 0.1)';
+                let statusIcon = '✅';
+
+                if (result.status === '취소') {
+                    statusColor = 'var(--slate-400)';
+                    statusBg = 'rgba(100, 116, 139, 0.1)';
+                    statusIcon = '⛔';
+                } else if (result.status === '승인완료' || result.status === '승인') {
+                    statusColor = 'var(--neon-blue)';
+                    statusBg = 'rgba(59, 130, 246, 0.1)';
+                    statusIcon = '🎉';
+                } else if (result.status === '대기' || result.status === '심사중') {
+                    statusColor = '#f59e0b';
+                    statusBg = 'rgba(245, 158, 11, 0.1)';
+                    statusIcon = '⏳';
+                }
+
+                resultDiv.innerHTML = `
+                    <div style="padding:20px; background:${statusBg}; border:1px solid ${statusColor}; border-radius:12px;">
+                        <div style="font-weight:700; color:${statusColor}; margin-bottom:12px;">${statusIcon} 신청 확인됨</div>
+                        <div style="display:grid; gap:8px; margin-bottom:16px;">
+                            <div style="display:flex; justify-content:space-between;">
+                                <span style="color:var(--slate-400);">코스</span>
+                                <span style="font-weight:600;">${result.course}</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between;">
+                                <span style="color:var(--slate-400);">상태</span>
+                                <span style="font-weight:600; color:${statusColor};">${result.status}</span>
+                            </div>
+                        </div>
+                        ${result.status !== '취소' ? `
+                            <button onclick="cancelRegistrationAction()" 
+                                    style="width:100%; padding:12px; background:rgba(239, 68, 68, 0.2); border:1px solid var(--neon-red); border-radius:8px; color:var(--neon-red); cursor:pointer; font-weight:600;">
+                                ❌ 신청 취소하기
+                            </button>
+                            <button onclick="downloadDigitalBib('${name}', '${result.course}')"
+                                    style="width:100%; margin-top:12px; padding:12px; background:linear-gradient(135deg, #3b82f6, #2563eb); border:none; border-radius:8px; color:white; cursor:pointer; font-weight:600;">
+                                🎽 모바일 배번호 다운로드
+                            </button>
+                        ` : '<p style="text-align:center; color:var(--slate-400); font-size:0.875rem;">이미 취소된 신청입니다.</p>'}
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `
+                    <div style="padding:20px; background:rgba(239, 68, 68, 0.1); border:1px solid var(--neon-red); border-radius:12px;">
+                        <div style="font-weight:700; color:var(--neon-red);">❌ 신청 내역을 찾을 수 없습니다</div>
+                        <p style="font-size:0.875rem; color:var(--slate-400); margin-top:8px;">이름과 휴대폰 뒷자리를 다시 확인해주세요.</p>
+                    </div>
+                `;
+            }
+        });
+
+        async function cancelRegistrationAction() {
+            const name = document.getElementById('status-name').value;
+            const phone4 = document.getElementById('status-phone').value;
+
+            if (!confirm('정말 신청을 취소하시겠습니까?\\n취소 후에는 다시 신청해야 합니다.')) {
+                return;
+            }
+
+            try {
+                const params = new URLSearchParams({ name, phone4 });
+                const response = await fetch(`${API_URL}?action=cancelRegistration&${params.toString()}`, { method: 'POST' });
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('✅ 신청이 취소되었습니다.');
+                    document.getElementById('status-form').dispatchEvent(new Event('submit'));
+                } else {
+                    alert('❌ 취소 오류: ' + (result.error || '알 수 없는 오류'));
+                }
+            } catch (err) {
+                alert('❌ 네트워크 오류가 발생했습니다.');
+            }
+        }
+
+        function downloadDigitalBib(name, course) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 600;
+            canvas.height = 400;
+            const ctx = canvas.getContext('2d');
+
+            // Draw Background
+            const gradient = ctx.createLinearGradient(0, 0, 600, 400);
+            gradient.addColorStop(0, '#1e293b');
+            gradient.addColorStop(1, '#0f172a');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 600, 400);
+
+            // Draw Border
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 10;
+            ctx.strokeRect(10, 10, 580, 380);
+
+            // Draw Header
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 30px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('BUSAN GALMAETGIL 100M', 300, 60);
+
+            // Draw Course
+            ctx.fillStyle = '#ef4444';
+            ctx.font = 'bold 80px sans-serif';
+            ctx.fillText(course, 300, 160);
+
+            // Draw Name
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 50px sans-serif';
+            ctx.fillText(name, 300, 240);
+
+            // Draw Footer
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '20px sans-serif';
+            ctx.fillText('2026.03.01', 300, 350);
+
+            // Download
+            const link = document.createElement('a');
+            link.download = `BIB_${name}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+    </script>
+</body>
+
+</html>

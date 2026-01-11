@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>부산 갈맷길 100M | 코스 안내</title>
+    <meta name="description" content="부산 갈맷길 100M 코스 지도, GPX 경로 및 고도 프로필">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.2.1/dist/chartjs-plugin-annotation.min.js"></script>
+</head>
+
+<body>
+    <!-- Navigation Panel (Navigation Mode) -->
+    <div class="nav-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <h3 style="font-size:1rem;">🧭 내비게이션 모드</h3>
+            <button id="stop-nav-btn" class="btn-secondary" style="padding:8px 16px; font-size:0.875rem;">종료</button>
+        </div>
+        <div class="nav-info-grid">
+            <div class="nav-info-item">
+                <div class="nav-info-label">다음 CP까지</div>
+                <div class="nav-info-value distance" id="nav-distance">-</div>
+            </div>
+            <div class="nav-info-item">
+                <div class="nav-info-label">예상 고도</div>
+                <div class="nav-info-value elevation" id="nav-elevation">-</div>
+            </div>
+            <div class="nav-info-item">
+                <div class="nav-info-label">다음 목표</div>
+                <div class="nav-info-value" id="nav-next-cp" style="font-size:0.875rem;">-</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav-desktop glass">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <img src="assets/main_logo.png" alt="갈맷길 100M" onerror="this.style.display='none'">
+                <span class="gradient-text">갈맷길 100M</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">홈</a></li>
+                <li><a href="course.html">코스</a></li>
+                <li><a href="schedule.html">일정</a></li>
+                <li><a href="registration.html">참가신청</a></li>
+                <li><a href="notices.html">공지사항</a></li>
+                <li><a href="community.html">커뮤니티</a></li>
+                <li><a href="gallery.html">갤러리</a></li>
+                <li><a href="results.html">결과조회</a></li>
+            </ul>
+            <button class="nav-hamburger">☰</button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu">
+        <a href="index.html">🏠 홈</a>
+        <a href="course.html">🗺️ 코스</a>
+        <a href="schedule.html">📅 일정</a>
+        <a href="registration.html">📝 참가신청</a>
+        <a href="notices.html">📢 공지사항</a>
+        <a href="community.html">👥 커뮤니티</a>
+        <a href="gallery.html">📸 갤러리</a>
+        <a href="results.html">🏆 결과조회</a>
+    </div>
+
+    <!-- Cheer Marquee -->
+    <div class="cheer-marquee">
+        <div class="cheer-marquee-inner marquee"></div>
+    </div>
+
+    <!-- Main Content -->
+    <main style="padding-top:120px; min-height:100vh;">
+        <!-- Header -->
+        <section style="text-align:center; padding:40px 24px;">
+            <h1 style="font-size:2.5rem; margin-bottom:16px;" class="gradient-text">코스 안내</h1>
+            <p style="color:var(--slate-400);">다대포해수욕장에서 출발하여 화명생태공원, 기장군청, 해운대, 송도를 거쳐 다시 다대포로 돌아오는 순환 코스입니다.</p>
+        </section>
+
+        <!-- Action Buttons -->
+        <section style="padding:0 24px 32px; max-width:800px; margin:0 auto;">
+            <div class="action-buttons-grid">
+                <button id="location-btn" class="btn-secondary" style="display:flex; align-items:center; gap:8px;">
+                    📍 현재 위치
+                </button>
+                <button id="nav-btn" class="btn-primary" style="display:flex; align-items:center; gap:8px;">
+                    🧭 내비게이션 시작
+                </button>
+                <a href="public/course.gpx" download class="btn-secondary"
+                    style="display:flex; align-items:center; gap:8px;">
+                    ⬇️ GPX 다운로드
+                </a>
+                <label for="gpx-upload" class="btn-secondary"
+                    style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                    📂 GPX 파일 업로드
+                </label>
+                <input type="file" id="gpx-upload" accept=".gpx" style="display:none;">
+            </div>
+            <p id="gpx-status" style="text-align:center; margin-top:12px; font-size:0.875rem; color:var(--slate-400);">
+            </p>
+        </section>
+
+        <!-- Checkpoints -->
+        <section style="padding:0 24px 32px; max-width:1200px; margin:0 auto;">
+            <div id="checkpoints-grid" class="checkpoints-responsive">
+                <!-- Filled by JS -->
+            </div>
+        </section>
+
+        <!-- Map -->
+        <section style="padding:0 24px 32px; max-width:1200px; margin:0 auto;">
+            <div class="glass-card" style="padding:24px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                    <h3 style="font-size:1.25rem;">🗺️ 코스 지도</h3>
+                    <div style="display:flex; gap:16px; font-size:0.75rem; color:var(--slate-400);">
+                        <span><span style="color:#ef4444;">━━</span> 오르막</span>
+                        <span><span style="color:#22c55e;">━━</span> 평지</span>
+                        <span><span style="color:#3b82f6;">━━</span> 내리막</span>
+                    </div>
+                </div>
+                <div id="map" class="map-container"></div>
+            </div>
+        </section>
+
+        <!-- Elevation Chart -->
+        <section style="padding:0 24px 80px; max-width:1200px; margin:0 auto;">
+            <div class="glass-card" style="padding:24px;">
+                <h3 style="font-size:1.25rem; margin-bottom:16px;">📈 고도 프로필</h3>
+                <p style="font-size:0.875rem; color:var(--slate-400); margin-bottom:16px;">
+                    차트를 클릭하면 해당 위치가 지도에 표시됩니다.
+                </p>
+                <div style="height:250px;">
+                    <canvas id="elevation-chart"></canvas>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div style="font-weight:700; color:#fff; margin-bottom:8px;">부산 갈맷길 100M</div>
+        <div style="font-size:0.875rem;">© 2026 Busan Galmaetgil 100M. All rights reserved.</div>
+    </footer>
+
+    <!-- Bottom Navigation (Mobile) -->
+    <nav class="bottom-nav">
+        <div class="bottom-nav-inner">
+            <a href="index.html"><span class="icon">🏠</span>홈</a>
+            <a href="course.html"><span class="icon">🗺️</span>코스</a>
+            <a href="schedule.html"><span class="icon">📅</span>일정</a>
+            <a href="registration.html"><span class="icon">📝</span>신청</a>
+            <a href="results.html"><span class="icon">🏆</span>결과</a>
+        </div>
+    </nav>
+
+    <!-- SOS Button -->
+    <button class="location-share-btn">◎</button>
+
+    <script src="js/app.js"></script>
+    <script src="js/navigation.js"></script>
+    <script>
+        let gpxNav;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Initialize GPX Navigation
+            gpxNav = new GPXNavigation();
+
+            // Load checkpoints
+            let checkpoints = await fetchData('getCheckpoints');
+            renderCheckpoints(checkpoints);
+
+            // Fetch Weather (Async Update)
+            fetchWeatherForCheckpoints(checkpoints).then(updatedCheckpoints => {
+                checkpoints = updatedCheckpoints;
+                renderCheckpoints(checkpoints);
+            });
+
+            // Load GPX
+            const loaded = await gpxNav.loadGPX('public/course.gpx');
+
+            if (loaded) {
+                gpxNav.initMap('map', checkpoints);
+                gpxNav.initChart('elevation-chart');
+            } else {
+                // Fallback: generate mock elevation data from checkpoints
+                gpxNav.generateMockElevationData(checkpoints);
+                gpxNav.initMap('map', checkpoints);
+                gpxNav.initChart('elevation-chart');
+
+                // Draw route line between checkpoints
+                if (gpxNav.gpxData.length > 0) {
+                    gpxNav.drawRoute();
+                }
+            }
+
+            // Current Location Button
+            document.getElementById('location-btn').addEventListener('click', async () => {
+                try {
+                    await gpxNav.getCurrentLocation();
+                } catch (err) {
+                    alert('위치를 가져올 수 없습니다: ' + err.message);
+                }
+            });
+
+            // Start Navigation Button
+            document.getElementById('nav-btn').addEventListener('click', () => {
+                gpxNav.startNavigation();
+            });
+
+            // Stop Navigation Button
+            document.getElementById('stop-nav-btn').addEventListener('click', () => {
+                gpxNav.stopNavigation();
+            });
+
+            // GPX File Upload Handler
+            document.getElementById('gpx-upload').addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const statusEl = document.getElementById('gpx-status');
+                statusEl.textContent = '📂 GPX 파일을 읽는 중...';
+                statusEl.style.color = 'var(--slate-400)';
+
+                try {
+                    const gpxText = await file.text();
+
+                    // Parse uploaded GPX
+                    const parser = new DOMParser();
+                    const gpxDoc = parser.parseFromString(gpxText, 'text/xml');
+                    const trackPoints = gpxDoc.querySelectorAll('trkpt');
+
+                    if (trackPoints.length === 0) {
+                        throw new Error('GPX 파일에 경로 데이터가 없습니다.');
+                    }
+
+                    // Clear existing data and load new GPX
+                    gpxNav.gpxData = [];
+                    trackPoints.forEach(pt => {
+                        gpxNav.gpxData.push({
+                            lat: parseFloat(pt.getAttribute('lat')),
+                            lon: parseFloat(pt.getAttribute('lon')),
+                            ele: parseFloat(pt.querySelector('ele')?.textContent || 0)
+                        });
+                    });
+
+                    // Reload map and chart with new GPX data
+                    const checkpoints = await fetchData('getCheckpoints');
+
+                    // Clear existing map layers
+                    if (gpxNav.routeLayer) {
+                        gpxNav.map.removeLayer(gpxNav.routeLayer);
+                    }
+
+                    // Draw new route
+                    gpxNav.drawRoute();
+
+                    // Fit map to new route
+                    const bounds = L.latLngBounds(gpxNav.gpxData.map(p => [p.lat, p.lon]));
+                    gpxNav.map.fitBounds(bounds, { padding: [20, 20] });
+
+                    // Update chart
+                    gpxNav.initChart('elevation-chart');
+
+                    statusEl.textContent = `✅ "${file.name}" 로드 완료! (${trackPoints.length}개 포인트)`;
+                    statusEl.style.color = 'var(--green-500)';
+
+                } catch (err) {
+                    statusEl.textContent = '❌ 오류: ' + err.message;
+                    statusEl.style.color = 'var(--neon-red)';
+                }
+            });
+        });
+
+        function renderCheckpoints(checkpoints) {
+            const grid = document.getElementById('checkpoints-grid');
+            grid.innerHTML = checkpoints.map((cp, i) => {
+                const isStart = i === 0;
+                const isFinish = i === checkpoints.length - 1;
+                const bgColor = isStart ? 'var(--green-500)' : isFinish ? 'var(--neon-red)' : 'var(--neon-blue)';
+
+                // Weather HTML (if available)
+                const weatherHtml = cp.weather ? `
+                    <div style="margin-left:auto; text-align:center; min-width:50px;" class="weather-info">
+                        <div style="font-size:1.5rem; line-height:1;">${cp.weather.icon}</div>
+                        <div style="font-size:0.75rem; color:var(--slate-400); margin-top:2px;">${cp.weather.temp}°C</div>
+                    </div>
+                ` : '';
+
+                return `
+                    <div class="glass-card" style="padding:16px; display:flex; align-items:center; gap:12px;">
+                        <div style="width:40px; height:40px; border-radius:50%; background:${bgColor};
+                                    display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0;">
+                            ${i + 1}
+                        </div>
+                        <div>
+                            <div style="font-weight:600; font-size:0.875rem;">${cp.name}</div>
+                            <div style="font-size:0.75rem; color:var(--slate-400);">
+                                ${cp.km}km | 컷오프 ${cp.cutoff}
+                            </div>
+                        </div>
+                        ${weatherHtml}
+                    </div>
+                `;
+            }).join('');
+        }
+    </script>
+</body>
+
+</html>

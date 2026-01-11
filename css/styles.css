@@ -1,0 +1,910 @@
+/* ============================================
+   Busan Galmaetgil 100M - Common Styles
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+
+:root {
+    --slate-950: #020617;
+    --slate-900: #0f172a;
+    --slate-800: #1e293b;
+    --slate-700: #334155;
+    --slate-600: #475569;
+    --slate-400: #94a3b8;
+    --slate-300: #cbd5e1;
+    --neon-red: #ef4444;
+    --neon-blue: #3b82f6;
+    --green-500: #22c55e;
+    --purple-500: #a855f7;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Noto Sans KR', sans-serif;
+    scroll-behavior: smooth;
+}
+
+body {
+    background: var(--slate-950);
+    color: #fff;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Glass Effects */
+.glass {
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-card {
+    background: rgba(30, 41, 59, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+}
+
+/* Gradient Text */
+.gradient-text {
+    background: linear-gradient(135deg, var(--neon-red), var(--neon-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse-ring {
+    0% {
+        transform: scale(0.8);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(100%);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+@keyframes pulse-dot {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.2);
+        opacity: 0.8;
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+}
+
+.marquee {
+    animation: marquee 25s linear infinite;
+}
+
+.pulse-ring {
+    animation: pulse-ring 1.5s ease-out infinite;
+}
+
+.pulse-dot {
+    animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* Navigation - Desktop */
+.nav-desktop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 12px 24px;
+}
+
+.nav-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+}
+
+.nav-logo img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.nav-logo span {
+    font-weight: 700;
+    font-size: 1.125rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+}
+
+.nav-links a {
+    color: var(--slate-300);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: var(--neon-red);
+}
+
+.nav-hamburger {
+    display: none;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* Mobile Menu */
+.mobile-menu {
+    display: none;
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--slate-950);
+    z-index: 99;
+    padding: 24px;
+}
+
+.mobile-menu.open {
+    display: block;
+}
+
+.mobile-menu a {
+    display: block;
+    padding: 16px 0;
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.25rem;
+    border-bottom: 1px solid var(--slate-800);
+}
+
+/* Bottom Navigation (Mobile) */
+.bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--slate-900);
+    border-top: 1px solid var(--slate-800);
+    z-index: 100;
+    padding: 8px 0;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+}
+
+.bottom-nav-inner {
+    display: flex;
+    justify-content: space-around;
+}
+
+.bottom-nav a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: var(--slate-400);
+    text-decoration: none;
+    font-size: 0.625rem;
+    padding: 4px 8px;
+    transition: color 0.2s;
+}
+
+.bottom-nav a.active {
+    color: var(--neon-red);
+}
+
+.bottom-nav .icon {
+    font-size: 1.25rem;
+}
+
+/* Marquee */
+.cheer-marquee {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    background: linear-gradient(90deg, rgba(239, 68, 68, 0.2), rgba(59, 130, 246, 0.2));
+    padding: 8px 0;
+    overflow: hidden;
+    z-index: 90;
+}
+
+.cheer-marquee-inner {
+    white-space: nowrap;
+}
+
+.cheer-marquee span {
+    display: inline-block;
+    margin: 0 32px;
+    font-size: 0.875rem;
+}
+
+/* Buttons */
+.btn-primary {
+    display: inline-block;
+    padding: 14px 32px;
+    background: linear-gradient(135deg, var(--neon-red), #dc2626);
+    color: #fff;
+    font-weight: 700;
+    border-radius: 9999px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+}
+
+.btn-secondary {
+    display: inline-block;
+    padding: 14px 32px;
+    background: transparent;
+    color: #fff;
+    font-weight: 700;
+    border-radius: 9999px;
+    text-decoration: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-blue {
+    background: linear-gradient(135deg, var(--neon-blue), #2563eb);
+}
+
+.btn-green {
+    background: linear-gradient(135deg, var(--green-500), #16a34a);
+}
+
+/* Forms */
+.form-input {
+    width: 100%;
+    padding: 14px 16px;
+    background: var(--slate-800);
+    border: 1px solid var(--slate-700);
+    border-radius: 12px;
+    color: #fff;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-input:focus {
+    border-color: var(--neon-red);
+}
+
+.form-input::placeholder {
+    color: var(--slate-400);
+}
+
+/* Map */
+#map,
+.map-container {
+    height: 500px;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+/* Location Share Button */
+.location-share-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, var(--neon-blue), #2563eb);
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    font-weight: 900;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.location-share-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 30px rgba(59, 130, 246, 0.7);
+}
+
+.location-share-btn:active {
+    transform: scale(0.95);
+}
+
+/* Footer */
+.footer {
+    padding: 48px 24px;
+    border-top: 1px solid var(--slate-800);
+    text-align: center;
+    color: var(--slate-400);
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+/* Tablet */
+@media (max-width: 1024px) {
+    .nav-links {
+        gap: 20px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+
+    .nav-hamburger {
+        display: block;
+    }
+
+    .bottom-nav {
+        display: block;
+    }
+
+    .location-share-btn {
+        bottom: 80px;
+    }
+
+    #map,
+    .map-container {
+        height: 350px;
+    }
+
+    .cheer-marquee {
+        top: 56px;
+    }
+
+    body {
+        padding-bottom: 70px;
+    }
+}
+
+/* Small Mobile */
+@media (max-width: 375px) {
+
+    .btn-primary,
+    .btn-secondary {
+        padding: 12px 24px;
+        font-size: 0.875rem;
+    }
+
+    .form-input {
+        padding: 12px 14px;
+    }
+}
+
+/* ============================================
+   Navigation Mode Styles
+   ============================================ */
+
+.nav-mode-active .nav-desktop,
+.nav-mode-active .cheer-marquee {
+    display: none;
+}
+
+.nav-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: var(--slate-900);
+    border-bottom: 1px solid var(--slate-800);
+    padding: 16px;
+    z-index: 100;
+    display: none;
+}
+
+.nav-mode-active .nav-panel {
+    display: block;
+}
+
+.nav-info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    text-align: center;
+}
+
+.nav-info-item {
+    background: rgba(30, 41, 59, 0.6);
+    padding: 12px;
+    border-radius: 12px;
+}
+
+.nav-info-label {
+    font-size: 0.75rem;
+    color: var(--slate-400);
+    margin-bottom: 4px;
+}
+
+.nav-info-value {
+    font-size: 1.125rem;
+    font-weight: 700;
+}
+
+.nav-info-value.distance {
+    color: var(--neon-blue);
+}
+
+.nav-info-value.elevation {
+    color: var(--green-500);
+}
+
+.nav-info-value.warning {
+    color: var(--neon-red);
+}
+
+/* User Location Marker */
+.user-location-marker {
+    width: 20px;
+    height: 20px;
+    background: var(--neon-blue);
+    border: 3px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
+    animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* Off-route Warning */
+.off-route-warning {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(239, 68, 68, 0.95);
+    padding: 24px 32px;
+    border-radius: 16px;
+    text-align: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s;
+}
+
+.off-route-warning h3 {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+}
+
+.off-route-warning p {
+    opacity: 0.9;
+}
+
+/* ============================================
+   Custom Map Controls
+   ============================================ */
+
+.map-controls {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.map-control-btn {
+    width: 44px;
+    height: 44px;
+    background: var(--slate-900);
+    border: 1px solid var(--slate-700);
+    border-radius: 12px;
+    color: #fff;
+    font-size: 1.25rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.map-control-btn:hover {
+    background: var(--slate-800);
+    border-color: var(--neon-blue);
+}
+
+.map-control-btn:active {
+    transform: scale(0.95);
+}
+
+.map-control-btn.fit-btn {
+    background: linear-gradient(135deg, var(--neon-blue), #2563eb);
+    border-color: transparent;
+}
+
+.map-control-btn.fit-btn:hover {
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.5);
+}
+
+/* ============================================
+   Course Page Action Buttons Mobile
+   ============================================ */
+
+.action-buttons-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+}
+
+/* ============================================
+   Checkpoints Grid Mobile
+   ============================================ */
+
+.checkpoints-responsive {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+/* ============================================
+   Additional Mobile Responsive Styles
+   ============================================ */
+
+@media (max-width: 768px) {
+
+    /* Action buttons - 2 columns on mobile */
+    .action-buttons-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .action-buttons-grid .btn-primary,
+    .action-buttons-grid .btn-secondary {
+        padding: 12px 16px;
+        font-size: 0.8rem;
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+
+    /* Checkpoints - 1 column on mobile */
+    .checkpoints-responsive {
+        grid-template-columns: 1fr;
+    }
+
+    /* Map container mobile height */
+    .map-wrapper {
+        position: relative;
+    }
+
+    /* Custom map controls - larger for touch */
+    .map-controls {
+        top: 12px;
+        right: 12px;
+    }
+
+    .map-control-btn {
+        width: 48px;
+        height: 48px;
+        font-size: 1.4rem;
+    }
+
+    /* Navigation panel mobile layout */
+    .nav-info-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .nav-info-item:last-child {
+        grid-column: 1 / -1;
+    }
+
+    .nav-info-value {
+        font-size: 1rem;
+    }
+
+    .nav-info-label {
+        font-size: 0.7rem;
+    }
+
+    /* Footer spacing for bottom nav */
+    .footer {
+        padding-bottom: 80px;
+    }
+
+    /* Elevation chart touch friendly */
+    #elevation-chart {
+        touch-action: pan-x pan-y;
+    }
+}
+
+@media (max-width: 480px) {
+
+    /* Extra small screens - stack buttons vertically */
+    .action-buttons-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .action-buttons-grid .btn-primary,
+    .action-buttons-grid .btn-secondary {
+        padding: 14px 20px;
+        font-size: 0.875rem;
+    }
+
+    /* Make map taller on small screens for better visibility */
+    #map,
+    .map-container {
+        height: 300px;
+    }
+
+    /* Navigation info smaller */
+    .nav-info-grid {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+
+    .nav-info-item {
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .nav-info-label {
+        margin-bottom: 0;
+    }
+
+    .nav-info-value {
+        font-size: 1.125rem;
+    }
+
+    /* Map controls closer to edge */
+    .map-controls {
+        top: 8px;
+        right: 8px;
+        gap: 6px;
+    }
+}
+
+/* ============================================
+   Landscape orientation adjustments
+   ============================================ */
+
+@media (max-height: 500px) and (orientation: landscape) {
+
+    #map,
+    .map-container {
+        height: 250px;
+    }
+
+    .nav-panel {
+        padding: 8px 16px;
+    }
+
+    .nav-info-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .nav-info-item {
+        padding: 8px;
+    }
+
+    .nav-info-item:last-child {
+        grid-column: auto;
+    }
+}
+
+/* ============================================
+   Registration Page Mobile Styles
+   ============================================ */
+
+.tab-buttons {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+}
+
+.registration-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+@media (max-width: 768px) {
+
+    /* Tab buttons - single column on mobile */
+    .tab-buttons {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .tab-buttons .tab-btn {
+        min-width: 100% !important;
+        flex: none !important;
+        padding: 16px !important;
+    }
+
+    .tab-buttons .tab-btn>div:first-child {
+        font-size: 2rem !important;
+        margin-bottom: 8px !important;
+    }
+
+    /* Form inputs larger touch targets */
+    .form-input {
+        padding: 16px;
+        font-size: 16px;
+        /* Prevents iOS zoom on focus */
+    }
+
+    /* Form grid single column */
+    .registration-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Schedule table responsive */
+    .schedule-table th,
+    .schedule-table td {
+        padding: 12px 8px;
+        font-size: 0.875rem;
+    }
+
+    /* Cutoff table mobile */
+    .cutoff-table-responsive th,
+    .cutoff-table-responsive td {
+        padding: 12px 8px;
+    }
+
+    .cutoff-table-responsive th:first-child,
+    .cutoff-table-responsive td:first-child {
+        max-width: 150px;
+        word-wrap: break-word;
+    }
+}
+
+@media (max-width: 480px) {
+
+    /* Tab buttons even smaller on small screens */
+    .tab-buttons .tab-btn {
+        padding: 12px !important;
+    }
+
+    .tab-buttons .tab-btn>div:first-child {
+        font-size: 1.5rem !important;
+        margin-bottom: 4px !important;
+    }
+
+    .tab-buttons .tab-btn>div:nth-child(2) {
+        font-size: 0.95rem !important;
+    }
+
+    .tab-buttons .tab-btn>div:last-child {
+        font-size: 0.75rem !important;
+    }
+
+    /* Schedule cards compact */
+    .schedule-card {
+        padding: 16px !important;
+        gap: 12px !important;
+    }
+
+    .schedule-card .schedule-icon {
+        font-size: 2rem !important;
+    }
+
+    /* Results table scroll */
+    .table-scroll-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* ============================================
+   Touch Friendly Improvements
+   ============================================ */
+
+/* Minimum touch target size (44x44px recommended by Apple) */
+.btn-primary,
+.btn-secondary,
+.tab-btn,
+.map-control-btn,
+.nav-hamburger {
+    min-height: 44px;
+}
+
+/* Better focus states for accessibility */
+.btn-primary:focus,
+.btn-secondary:focus,
+.form-input:focus {
+    outline: 2px solid var(--neon-blue);
+    outline-offset: 2px;
+}
+
+/* Smooth scrolling for all containers */
+.scroll-container {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ============================================
+   Print Styles (for certificates etc.)
+   ============================================ */
+
+@media print {
+
+    .nav-desktop,
+    .bottom-nav,
+    .cheer-marquee,
+    .location-share-btn,
+    .map-controls {
+        display: none !important;
+    }
+
+    body {
+        padding: 0;
+        background: white;
+        color: black;
+    }
+}

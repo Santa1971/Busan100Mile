@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>부산 갈맷길 100M | 자유게시판</title>
+    <meta name="description" content="부산 갈맷길 100M 자유게시판 - 러너들의 소통 공간">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="nav-desktop glass">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <img src="assets/main_logo.png" alt="갈맷길 100M" onerror="this.style.display='none'">
+                <span class="gradient-text">갈맷길 100M</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">홈</a></li>
+                <li><a href="course.html">코스</a></li>
+                <li><a href="schedule.html">일정</a></li>
+                <li><a href="registration.html">참가신청</a></li>
+                <li><a href="notices.html">공지사항</a></li>
+                <li><a href="community.html">커뮤니티</a></li>
+                <li><a href="gallery.html">갤러리</a></li>
+                <li><a href="results.html">결과조회</a></li>
+            </ul>
+            <button class="nav-hamburger">☰</button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu">
+        <a href="index.html">🏠 홈</a>
+        <a href="course.html">🗺️ 코스</a>
+        <a href="schedule.html">📅 일정</a>
+        <a href="registration.html">📝 참가신청</a>
+        <a href="notices.html">📢 공지사항</a>
+        <a href="community.html">👥 커뮤니티</a>
+        <a href="gallery.html">📸 갤러리</a>
+        <a href="results.html">🏆 결과조회</a>
+    </div>
+
+    <!-- Cheer Marquee -->
+    <div class="cheer-marquee">
+        <div class="cheer-marquee-inner marquee"></div>
+    </div>
+
+    <!-- Main Content -->
+    <main style="padding-top:120px; min-height:100vh;">
+        <section style="max-width:900px; margin:0 auto; padding:40px 24px;">
+            <h1 style="font-size:2.5rem; text-align:center; margin-bottom:16px;" class="gradient-text">자유게시판</h1>
+            <p style="text-align:center; color:var(--slate-400); margin-bottom:48px;">러너들의 자유로운 이야기를 나눠보세요!</p>
+
+            <!-- Post Form Toggle -->
+            <div style="text-align:right; margin-bottom:20px;">
+                <button onclick="showPostForm()" class="btn-primary" style="padding:12px 24px;">✏️ 글쓰기</button>
+            </div>
+
+            <!-- Post Form (Hidden by default) -->
+            <div id="post-form" class="glass-card" style="padding:24px; display:none; margin-bottom:32px;">
+                <h2 style="font-size:1.25rem; margin-bottom:24px;">✏️ 새 글 작성</h2>
+                <form onsubmit="submitPost(event)" style="display:flex; flex-direction:column; gap:16px;">
+                    <div>
+                        <label
+                            style="display:block; font-size:0.875rem; color:var(--slate-400); margin-bottom:8px;">닉네임</label>
+                        <input type="text" name="nickname" required class="form-input" placeholder="닉네임을 입력하세요"
+                            maxlength="20">
+                    </div>
+                    <div>
+                        <label
+                            style="display:block; font-size:0.875rem; color:var(--slate-400); margin-bottom:8px;">제목</label>
+                        <input type="text" name="title" required class="form-input" placeholder="제목을 입력하세요"
+                            maxlength="100">
+                    </div>
+                    <div>
+                        <label
+                            style="display:block; font-size:0.875rem; color:var(--slate-400); margin-bottom:8px;">내용</label>
+                        <textarea name="content" required class="form-input" placeholder="내용을 입력하세요" rows="6"
+                            style="resize:vertical;"></textarea>
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:0.875rem; color:var(--slate-400); margin-bottom:8px;">삭제
+                            비밀번호</label>
+                        <input type="password" name="password" required class="form-input" placeholder="글 삭제 시 필요"
+                            maxlength="20">
+                    </div>
+                    <div style="display:flex; gap:12px;">
+                        <button type="button" onclick="hidePostForm()" class="btn-secondary" style="flex:1;">취소</button>
+                        <button type="submit" class="btn-primary" style="flex:1;">등록하기</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Posts List -->
+            <div class="glass-card" style="padding:24px;">
+                <h2 style="font-size:1.25rem; margin-bottom:24px;">📝 게시글 목록</h2>
+                <div id="posts-list" style="display:flex; flex-direction:column; gap:12px;">
+                    <!-- Filled by JS -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div style="font-weight:700; color:#fff; margin-bottom:8px;">부산 갈맷길 100M</div>
+        <div style="font-size:0.875rem;">© 2026 Busan Galmaetgil 100M. All rights reserved.</div>
+    </footer>
+
+    <!-- Bottom Navigation (Mobile) -->
+    <nav class="bottom-nav">
+        <div class="bottom-nav-inner">
+            <a href="index.html"><span class="icon">🏠</span>홈</a>
+            <a href="course.html"><span class="icon">🗺️</span>코스</a>
+            <a href="schedule.html"><span class="icon">📅</span>일정</a>
+            <a href="registration.html"><span class="icon">📝</span>신청</a>
+            <a href="results.html"><span class="icon">🏆</span>결과</a>
+        </div>
+    </nav>
+
+    <!-- SOS Button -->
+    <button class="location-share-btn">◎</button>
+
+    <script src="js/app.js"></script>
+    <script>
+        let postsData = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadPosts();
+        });
+
+        async function loadPosts() {
+            const list = document.getElementById('posts-list');
+            list.innerHTML = '<p style="text-align:center; color:var(--slate-400);">로딩 중...</p>';
+
+            try {
+                const posts = await fetchData('getPosts');
+                postsData = posts || [];
+                renderPosts(postsData);
+            } catch (err) {
+                list.innerHTML = '<p style="text-align:center; color:var(--slate-400);">게시글을 불러올 수 없습니다.</p>';
+            }
+        }
+
+        function renderPosts(posts) {
+            const list = document.getElementById('posts-list');
+            if (!posts || posts.length === 0) {
+                list.innerHTML = '<p style="text-align:center; color:var(--slate-400);">아직 게시글이 없습니다.</p>';
+                return;
+            }
+
+            list.innerHTML = posts.map(post => `
+                <div style="padding:16px; background:var(--slate-800); border-radius:12px; cursor:pointer; transition:all 0.2s;"
+                     onmouseover="this.style.background='var(--slate-700)'" 
+                     onmouseout="this.style.background='var(--slate-800)'"
+                     onclick="viewPost(${post.id})">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;">
+                        <div style="flex:1; min-width:200px;">
+                            <h3 style="font-size:1rem; font-weight:600; margin-bottom:8px; color:#fff;">${post.title}</h3>
+                            <div style="font-size:0.75rem; color:var(--slate-400);">
+                                <span style="color:var(--neon-blue);">${post.nickname}</span> · ${post.date} · 조회 ${post.views || 0}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showPostForm() {
+            document.getElementById('post-form').style.display = 'block';
+            document.getElementById('post-form').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function hidePostForm() {
+            document.getElementById('post-form').style.display = 'none';
+        }
+
+        async function submitPost(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const post = {
+                nickname: formData.get('nickname'),
+                title: formData.get('title'),
+                content: formData.get('content'),
+                password: formData.get('password')
+            };
+
+            try {
+                const params = new URLSearchParams(post);
+                const response = await fetch(`${API_URL}?action=submitPost&${params.toString()}`, {
+                    method: 'POST'
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('✅ 글이 등록되었습니다!');
+                    hidePostForm();
+                    e.target.reset();
+                    await loadPosts();  // Reload posts
+                } else {
+                    alert('❌ 오류: ' + (result.error || '글 등록에 실패했습니다.'));
+                }
+            } catch (err) {
+                alert('❌ 네트워크 오류가 발생했습니다.');
+                console.error('Post submit error:', err);
+            }
+        }
+
+        function viewPost(id) {
+            const post = postsData.find(p => p.id === id);
+            if (post) {
+                alert(`📝 ${post.title}\n\n${post.content}\n\n- ${post.nickname} (${post.date})`);
+            }
+        }
+    </script>
+</body>
+
+</html>

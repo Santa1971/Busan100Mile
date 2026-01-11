@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>부산 갈맷길 100M | 포토 갤러리</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            padding-bottom: 40px;
+        }
+        .gallery-item {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #1e293b;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .gallery-item:hover {
+            transform: translateY(-4px);
+        }
+        .gallery-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+        .gallery-overlay {
+            padding: 12px;
+            font-size: 0.9rem;
+            color: #e2e8f0;
+        }
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .lightbox img {
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: 8px;
+        }
+        .close-lightbox {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #fff;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="nav-desktop glass">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <span class="gradient-text">갈맷길 100M</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">홈</a></li>
+                <li><a href="course.html">코스</a></li>
+                <li><a href="schedule.html">일정</a></li>
+                <li><a href="registration.html">참가신청</a></li>
+                <li><a href="notices.html">공지사항</a></li>
+                <li><a href="community.html">커뮤니티</a></li>
+                <li><a href="gallery.html" class="active">갤러리</a></li>
+                <li><a href="results.html">결과조회</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main style="padding-top:120px; min-height:100vh;">
+        <section style="text-align:center; padding:0 24px 40px;">
+            <h1 class="gradient-text" style="font-size:2.5rem; margin-bottom:16px;">포토 갤러리</h1>
+            <p style="color:var(--slate-400);">대회의 생생한 현장을 확인하세요.</p>
+        </section>
+
+        <section style="padding:0 24px; max-width:1200px; margin:0 auto;">
+            <!-- Upload / Link Button -->
+            <div style="text-align:right; margin-bottom:24px;">
+                <button onclick="openSubmitModal()" class="btn-primary">📸 사진 제보하기</button>
+            </div>
+
+            <!-- Gallery Grid -->
+            <div class="gallery-grid" id="gallery-container">
+                <!-- Filled by JS -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Lightbox -->
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <span class="close-lightbox">&times;</span>
+        <img id="lightbox-img" src="">
+    </div>
+
+    <!-- Submit Modal -->
+    <div id="submit-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:999; align-items:center; justify-content:center;">
+        <div class="glass-card" style="padding:32px; width:90%; max-width:400px; position:relative;">
+            <h3 style="margin-bottom:16px;">사진 링크 제보</h3>
+            <p style="font-size:0.875rem; color:#94a3b8; margin-bottom:16px;">
+                인스타그램, 블로그 등의 사진 링크를 공유해주세요.<br>
+                관리자 확인 후 갤러리에 등록됩니다.
+            </p>
+            <input type="text" id="photo-link" placeholder="https://..." class="form-input" style="margin-bottom:12px;">
+            <input type="text" id="photo-desc" placeholder="사진 설명 (선택)" class="form-input" style="margin-bottom:24px;">
+            <div style="display:flex; gap:12px; justify-content:flex-end;">
+                <button onclick="document.getElementById('submit-modal').style.display='none'" class="btn-secondary">취소</button>
+                <button onclick="submitPhoto()" class="btn-primary">제출</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        // Demo Data
+        const DEMO_PHOTOS = [
+            { src: 'assets/gallery_1.jpg', desc: '2025 출발선' },
+            { src: 'assets/gallery_2.jpg', desc: '해안 절벽 코스' },
+            { src: 'https://images.unsplash.com/photo-1551334787-21e6bd3ab135?auto=format&fit=crop&q=80&w=600', desc: '러너들의 열정' },
+            { src: 'https://images.unsplash.com/photo-1452626038306-3aae5e295729?auto=format&fit=crop&q=80&w=600', desc: '피니시 라인' },
+            { src: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&q=80&w=600', desc: '아름다운 부산 바다' },
+            { src: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&q=80&w=600', desc: '역동적인 레이스' }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderGallery(DEMO_PHOTOS);
+        });
+
+        function renderGallery(photos) {
+            const container = document.getElementById('gallery-container');
+            container.innerHTML = photos.map(p => `
+                <div class="gallery-item" onclick="openLightbox('${p.src}')">
+                    <img src="${p.src}" class="gallery-img" loading="lazy" onerror="this.src='https://via.placeholder.com/400x300?text=No+Image'">
+                    <div class="gallery-overlay">
+                        ${p.desc}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openLightbox(src) {
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('lightbox').style.display = 'flex';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+        }
+
+        function openSubmitModal() {
+            document.getElementById('submit-modal').style.display = 'flex';
+        }
+
+        async function submitPhoto() {
+            const link = document.getElementById('photo-link').value;
+            const desc = document.getElementById('photo-desc').value;
+
+            if (!link) {
+                alert('링크를 입력해주세요.');
+                return;
+            }
+
+            // Reuse 'submitPost' action for now or just mock it since we don't have a dedicated Photo Sheet yet
+            // In a real app, I'd create a 'Photos' sheet.
+            // For now, I will simulate success.
+
+            const btn = event.target;
+            btn.textContent = '제출 중...';
+            btn.disabled = true;
+
+            await new Promise(r => setTimeout(r, 1000)); // Simulate net delay
+
+            alert('제보해주셔서 감사합니다! 관리자 확인 후 등록됩니다.');
+            document.getElementById('submit-modal').style.display = 'none';
+            btn.textContent = '제출';
+            btn.disabled = false;
+        }
+    </script>
+</body>
+</html>
