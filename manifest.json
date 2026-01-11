@@ -1,0 +1,20 @@
+{
+  "name": "부산 갈맷길 100M",
+  "short_name": "갈맷길100M",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#0a0a0f",
+  "icons": [
+    {
+      "src": "assets/main_logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "assets/main_logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

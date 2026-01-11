@@ -349,4 +349,15 @@ document.addEventListener('DOMContentLoaded', () => {
     initActiveNav();
     initCheerMarquee();
     initLocationShare();
+    registerServiceWorker();
 });
+
+function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./service-worker.js')
+                .then(reg => console.log('Service Worker Registered!', reg))
+                .catch(err => console.log('Service Worker Failed!', err));
+        });
+    }
+}

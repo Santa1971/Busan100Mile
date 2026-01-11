@@ -41,7 +41,7 @@
     <nav class="nav-desktop">
         <div class="nav-container">
             <a href="index.html" class="nav-logo">
-                <img src="assets/main_logo.jpg" alt="갈맷길 100M" onerror="this.src='https://via.placeholder.com/40'">
+                <img src="assets/main_logo.jpg" alt="갈맷길 100M" class="logo-img" loading="lazy">
                 <span>BUSAN 100M</span>
             </a>
             <ul class="nav-links">
@@ -124,7 +124,7 @@
     <!-- SOS Button -->
     <button class="location-share-btn">◎</button>
 
-    <script src="js/app.js"></script>
+    <script src="js/app.js" defer></script>
     <script>
         function toggleMenu() {
             const menu = document.getElementById('mobileMenu');

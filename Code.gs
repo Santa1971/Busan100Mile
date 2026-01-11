@@ -136,17 +136,38 @@ function getInitialData() {
 }
 
 function getNotices() {
+  const cache = CacheService.getScriptCache();
+  const cached = cache.get('notices');
+  if (cached) {
+    return ContentService.createTextOutput(cached).setMimeType(ContentService.MimeType.JSON);
+  }
   const data = sheetToJSON(getSheet(SHEETS.NOTICES));
+  const json = JSON.stringify(data);
+  cache.put('notices', json, 600); // Cache for 10 minutes
   return jsonResponse(data);
 }
 
 function getCheckpoints() {
+  const cache = CacheService.getScriptCache();
+  const cached = cache.get('checkpoints');
+  if (cached) {
+    return ContentService.createTextOutput(cached).setMimeType(ContentService.MimeType.JSON);
+  }
   const data = sheetToJSON(getSheet(SHEETS.CHECKPOINTS));
+  const json = JSON.stringify(data);
+  cache.put('checkpoints', json, 600); // Cache for 10 minutes
   return jsonResponse(data);
 }
 
 function getSchedule() {
+  const cache = CacheService.getScriptCache();
+  const cached = cache.get('schedule');
+  if (cached) {
+    return ContentService.createTextOutput(cached).setMimeType(ContentService.MimeType.JSON);
+  }
   const data = sheetToJSON(getSheet(SHEETS.SCHEDULE));
+  const json = JSON.stringify(data);
+  cache.put('schedule', json, 600); // Cache for 10 minutes
   return jsonResponse(data);
 }
 
