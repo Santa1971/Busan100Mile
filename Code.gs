@@ -288,7 +288,11 @@ function register(e) {
     sanitize(p.bloodType),
     sanitize(p.emergencyContact),
     sanitize(p.emergencyPhone),
-    '신청완료'
+    '신청완료',
+    sanitize(p.postcode),
+    sanitize(p.address),
+    sanitize(p.addressDetail),
+    sanitize(p.tshirtSize)
   ];
 
   sheet.appendRow(row);
@@ -396,7 +400,7 @@ function setupSpreadsheet() {
     'Notices': ['id', 'date', 'title', 'content', 'image_url'],
     'Checkpoints': ['id', 'name', 'km', 'cutoff', 'lat', 'lon'],
     'Schedule': ['id', 'time', 'title', 'location', 'icon'],
-    'Registrations': ['timestamp', 'name', 'birth', 'phone', 'course', 'bloodType', 'emergencyContact', 'emergencyPhone', 'status'],
+    'Registrations': ['timestamp', 'name', 'birth', 'phone', 'course', 'bloodType', 'emergencyContact', 'emergencyPhone', 'status', 'postcode', 'address', 'addressDetail', 'tshirtSize'],
     'Results': ['bib', 'name', 'phone_last4', 'course', 'time', 'rank'],
     'Carpool': ['id', 'type', 'origin', 'contact', 'seats', 'time', 'password'],
     'Cheers': ['message', 'name', 'timestamp'],
