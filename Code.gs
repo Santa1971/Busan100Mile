@@ -6,7 +6,7 @@
 // ============================================
 // CONFIGURATION
 // ============================================
-const SPREADSHEET_ID = '1_aR99HL1KCYi6rZmCLCveGICiI4NgjcMpy2v0kLCfOw'; // Replace with actual ID
+const SPREADSHEET_ID = '1FwaSmnylrVl-nvref9MvelLWrzvFZcVm008GbGa0X8o'; // Replace with actual ID
 const SHEETS = {
   CONFIG: 'Config',
   NOTICES: 'Notices',

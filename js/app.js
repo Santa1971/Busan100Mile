@@ -3,7 +3,7 @@
 // ============================================
 
 const USE_MOCK = false;  // API 연결 전까지 Mock 데이터 사용
-const API_URL = 'https://script.google.com/macros/s/AKfycbzZucjkN7Xil66Q4xRs85M12k1rDpUtmQ98RBzRh9Sc7sVb2x_JkBTaF6TuFuB_1fr0fw/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbzBYClNHwDChF_NsR05PP9myf2PeUOeArN6JipMf7WEjhqics4lhQ4NiL1G8Jk-GJHADw/exec';
 
 // ============================================
 // MOCK DATA
