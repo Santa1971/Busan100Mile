@@ -1,0 +1,13 @@
+127.0.0.1 - - [12/Jan/2026 23:00:49] code 404, message File not found
+127.0.0.1 - - [12/Jan/2026 23:00:49] "GET /robots.txt HTTP/1.1" 404 -
+127.0.0.1 - - [12/Jan/2026 23:00:49] "GET /index.html HTTP/1.0" 200 -
+127.0.0.1 - - [12/Jan/2026 23:02:27] code 404, message File not found
+127.0.0.1 - - [12/Jan/2026 23:02:27] "GET /robots.txt HTTP/1.1" 404 -
+127.0.0.1 - - [12/Jan/2026 23:02:27] "GET /course.html HTTP/1.0" 200 -
+127.0.0.1 - - [12/Jan/2026 23:09:11] "GET /course.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Jan/2026 23:09:11] "GET /js/app.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Jan/2026 23:09:11] code 404, message File not found
+127.0.0.1 - - [12/Jan/2026 23:09:11] "GET /assets/main_logo.png HTTP/1.1" 404 -
+127.0.0.1 - - [12/Jan/2026 23:09:11] "GET /css/styles.css HTTP/1.1" 200 -
+127.0.0.1 - - [12/Jan/2026 23:09:11] "GET /js/navigation.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Jan/2026 23:09:14] "GET /public/course.gpx HTTP/1.1" 200 -

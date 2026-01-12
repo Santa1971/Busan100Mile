@@ -229,34 +229,17 @@
                 try {
                     const gpxText = await file.text();
 
-                    // Parse uploaded GPX
-                    const parser = new DOMParser();
-                    const gpxDoc = parser.parseFromString(gpxText, 'text/xml');
-                    const trackPoints = gpxDoc.querySelectorAll('trkpt');
+                    // Use parseGPX method from GPXNavigation class
+                    gpxNav.parseGPX(gpxText);
 
-                    if (trackPoints.length === 0) {
+                    if (gpxNav.gpxData.length === 0) {
                         throw new Error('GPX 파일에 경로 데이터가 없습니다.');
                     }
 
-                    // Clear existing data and load new GPX
-                    gpxNav.gpxData = [];
-                    trackPoints.forEach(pt => {
-                        gpxNav.gpxData.push({
-                            lat: parseFloat(pt.getAttribute('lat')),
-                            lon: parseFloat(pt.getAttribute('lon')),
-                            ele: parseFloat(pt.querySelector('ele')?.textContent || 0)
-                        });
-                    });
-
                     // Reload map and chart with new GPX data
-                    const checkpoints = await fetchData('getCheckpoints');
+                    // Note: checkpoints are already loaded
 
-                    // Clear existing map layers
-                    if (gpxNav.routeLayer) {
-                        gpxNav.map.removeLayer(gpxNav.routeLayer);
-                    }
-
-                    // Draw new route
+                    // Draw new route (handles layer removal internally)
                     gpxNav.drawRoute();
 
                     // Fit map to new route
@@ -266,18 +249,23 @@
                     // Update chart
                     gpxNav.initChart('elevation-chart');
 
-                    statusEl.textContent = `✅ "${file.name}" 로드 완료! (${trackPoints.length}개 포인트)`;
+                    statusEl.textContent = `✅ "${file.name}" 로드 완료! (${gpxNav.gpxData.length}개 포인트)`;
                     statusEl.style.color = 'var(--green-500)';
 
                 } catch (err) {
                     statusEl.textContent = '❌ 오류: ' + err.message;
                     statusEl.style.color = 'var(--neon-red)';
+                    console.error(err);
                 }
             });
         });
 
         function renderCheckpoints(checkpoints) {
             const grid = document.getElementById('checkpoints-grid');
+            if (!checkpoints) {
+                grid.innerHTML = '<p style="color:var(--slate-400); text-align:center; width:100%;">체크포인트 정보를 불러올 수 없습니다.</p>';
+                return;
+            }
             grid.innerHTML = checkpoints.map((cp, i) => {
                 const isStart = i === 0;
                 const isFinish = i === checkpoints.length - 1;
