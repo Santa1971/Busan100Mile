@@ -16,7 +16,8 @@ const SHEETS = {
   RESULTS: 'Results',
   CARPOOL: 'Carpool',
   CHEERS: 'Cheers',
-  POSTS: 'Posts'
+  POSTS: 'Posts',
+  ADMINS: 'Admins'
 };
 
 // ============================================
@@ -47,6 +48,22 @@ function sanitize(str) {
 function jsonResponse(data) {
   return ContentService.createTextOutput(JSON.stringify(data))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+function computeHash(input) {
+  const rawHash = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, input);
+  let txtHash = '';
+  for (let i = 0; i < rawHash.length; i++) {
+    let hashVal = rawHash[i];
+    if (hashVal < 0) {
+      hashVal += 256;
+    }
+    if (hashVal.toString(16).length == 1) {
+      txtHash += '0';
+    }
+    txtHash += hashVal.toString(16);
+  }
+  return txtHash;
 }
 
 // ============================================
@@ -223,11 +240,27 @@ function getPosts() {
 }
 
 function getAdminData(password) {
-  // Use a simple password for this demo.
-  // In production, implement a more robust auth or use a different script access level.
-  if (password !== 'admin_secret_key') {
+  if (!password) {
     return jsonResponse({ error: 'Unauthorized' });
   }
+
+  const adminsSheet = getSheet(SHEETS.ADMINS);
+  if (!adminsSheet) {
+    // If Admin sheet doesn't exist, fallback or fail safe
+    return jsonResponse({ error: 'Configuration Error' });
+  }
+
+  const data = adminsSheet.getDataRange().getValues();
+  // Assume Row 1 is header: username, password_hash
+  // Check against all rows starting from row 2
+  const inputHash = computeHash(password);
+
+  const authorized = data.slice(1).some(row => row[1] === inputHash);
+
+  if (!authorized) {
+    return jsonResponse({ error: 'Unauthorized' });
+  }
+
   const registrations = sheetToJSON(getSheet(SHEETS.REGISTRATIONS));
   return jsonResponse({ registrations: registrations });
 }
@@ -400,7 +433,8 @@ function setupSpreadsheet() {
     'Results': ['bib', 'name', 'phone_last4', 'course', 'time', 'rank'],
     'Carpool': ['id', 'type', 'origin', 'contact', 'seats', 'time', 'password'],
     'Cheers': ['message', 'name', 'timestamp'],
-    'Posts': ['id', 'nickname', 'title', 'content', 'password', 'date', 'views']
+    'Posts': ['id', 'nickname', 'title', 'content', 'password', 'date', 'views'],
+    'Admins': ['username', 'password_hash']
   };
 
   for (const [name, headers] of Object.entries(sheetsConfig)) {
