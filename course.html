@@ -123,6 +123,23 @@
                         <span><span style="color:#3b82f6;">━━</span> 내리막</span>
                     </div>
                 </div>
+
+                <!-- Simulation Controls -->
+                <div id="simulation-controls" style="display:flex; align-items:center; gap:12px; margin-bottom:12px; padding:12px; background:rgba(241, 245, 249, 0.5); border-radius:8px; border:1px solid var(--slate-200);">
+                    <button id="sim-play-btn" class="btn-primary" style="padding:6px 16px; border-radius:20px; font-size:0.875rem;">▶ 재생</button>
+                    <button id="sim-stop-btn" class="btn-secondary" style="padding:6px 16px; border-radius:20px; font-size:0.875rem;">⏹ 정지</button>
+
+                    <div style="flex:1; display:flex; align-items:center; gap:8px; margin:0 12px;">
+                        <span style="font-size:0.75rem; color:var(--slate-500); white-space:nowrap;">속도</span>
+                        <input type="range" id="sim-speed" min="1" max="100" value="20" style="flex:1; max-width:150px; cursor:pointer;">
+                        <span id="sim-speed-val" style="font-size:0.75rem; width:30px; text-align:right;">20x</span>
+                    </div>
+
+                    <div style="font-size:0.875rem; font-weight:600; color:var(--primary); white-space:nowrap;">
+                        🏁 <span id="sim-dist">0.0</span> km
+                    </div>
+                </div>
+
                 <div id="map" class="map-container"></div>
             </div>
         </section>
@@ -215,6 +232,33 @@
             // Stop Navigation Button
             document.getElementById('stop-nav-btn').addEventListener('click', () => {
                 gpxNav.stopNavigation();
+            });
+
+            // Simulation Controls
+            const playBtn = document.getElementById('sim-play-btn');
+            const stopBtn = document.getElementById('sim-stop-btn');
+            const speedSlider = document.getElementById('sim-speed');
+            const speedVal = document.getElementById('sim-speed-val');
+
+            playBtn.addEventListener('click', () => {
+                if (gpxNav.isSimulating && !gpxNav.isPaused) {
+                    gpxNav.pauseSimulation();
+                    playBtn.textContent = '▶ 재생';
+                } else {
+                    gpxNav.startSimulation();
+                    playBtn.textContent = '⏸ 일시정지';
+                }
+            });
+
+            stopBtn.addEventListener('click', () => {
+                gpxNav.stopSimulation();
+                playBtn.textContent = '▶ 재생';
+            });
+
+            speedSlider.addEventListener('input', (e) => {
+                const speed = parseInt(e.target.value);
+                speedVal.textContent = speed + 'x';
+                gpxNav.setSimulationSpeed(speed);
             });
 
             // GPX File Upload Handler

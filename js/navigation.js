@@ -15,6 +15,16 @@ class GPXNavigation {
         this.nearestPointIndex = 0;
         this.offRouteThreshold = 50; // meters
         this.checkpoints = [];
+
+        // Simulation State
+        this.isSimulating = false;
+        this.isPaused = false;
+        this.simSpeed = 20; // Default speed multiplier
+        this.simProgress = 0; // 0.0 to 1.0
+        this.simFrameId = null;
+        this.lastSimTime = 0;
+        this.simMarker = null;
+        this.totalDistance = 0;
     }
 
     // Parse GPX file
@@ -72,6 +82,7 @@ class GPXNavigation {
 
         // Sort by distance
         this.gpxData.sort((a, b) => a.distance - b.distance);
+        this.totalDistance = this.gpxData[this.gpxData.length - 1].distance;
         console.log(`Mock 고도 데이터 생성 완료: ${this.gpxData.length} 포인트`);
     }
 
@@ -94,8 +105,9 @@ class GPXNavigation {
                 totalDistance += this.calculateDistance(prevLat, prevLon, lat, lon);
             }
 
-            // Sample every 100th point for performance (large GPX file)
-            if (index % 100 === 0 || index === trkpts.length - 1) {
+            // Sample every 50th point for better resolution in simulation
+            // but not too heavy for memory
+            if (index % 50 === 0 || index === trkpts.length - 1) {
                 this.gpxData.push({
                     lat,
                     lon,
@@ -109,7 +121,8 @@ class GPXNavigation {
             prevLon = lon;
         });
 
-        console.log(`GPX 파싱 완료: ${this.gpxData.length} 포인트 (총 ${(totalDistance / 1000).toFixed(2)}km)`);
+        this.totalDistance = totalDistance / 1000;
+        console.log(`GPX 파싱 완료: ${this.gpxData.length} 포인트 (총 ${this.totalDistance.toFixed(2)}km)`);
     }
 
     // Haversine formula for distance calculation
@@ -413,6 +426,9 @@ class GPXNavigation {
                                 return `고도: ${item.raw.toFixed(0)}m`;
                             }
                         }
+                    },
+                    annotation: {
+                        annotations: {} // Initial empty annotations
                     }
                 },
                 scales: {
@@ -465,6 +481,180 @@ class GPXNavigation {
 
         setTimeout(() => this.map.removeLayer(marker), 3000);
     }
+
+    // ===========================
+    // Simulation Logic
+    // ===========================
+
+    startSimulation() {
+        if (this.isSimulating && !this.isPaused) return;
+
+        this.isSimulating = true;
+        this.isPaused = false;
+
+        if (this.simProgress >= 1.0) {
+            this.simProgress = 0;
+        }
+
+        this.lastSimTime = performance.now();
+        this.animateSimulation(this.lastSimTime);
+    }
+
+    pauseSimulation() {
+        this.isPaused = true;
+        if (this.simFrameId) {
+            cancelAnimationFrame(this.simFrameId);
+        }
+    }
+
+    stopSimulation() {
+        this.isSimulating = false;
+        this.isPaused = false;
+        this.simProgress = 0;
+
+        if (this.simFrameId) {
+            cancelAnimationFrame(this.simFrameId);
+        }
+
+        if (this.simMarker) {
+            this.map.removeLayer(this.simMarker);
+            this.simMarker = null;
+        }
+
+        // Reset chart line
+        if (this.chart) {
+            this.chart.options.plugins.annotation = { annotations: {} };
+            this.chart.update();
+        }
+
+        document.getElementById('sim-dist').textContent = '0.0';
+    }
+
+    setSimulationSpeed(speed) {
+        this.simSpeed = speed;
+    }
+
+    animateSimulation(timestamp) {
+        if (!this.isSimulating || this.isPaused) return;
+
+        const deltaTime = (timestamp - this.lastSimTime) / 1000; // seconds
+        this.lastSimTime = timestamp;
+
+        // Base speed: assume 1 hour to complete course (3600s) for normalized speed calculation
+        // This is arbitrary but effective for visual simulation.
+        // Real distance is this.totalDistance (km).
+        // Let's say base speed is 10 km/h = 10000 m / 3600 s ≈ 2.7 m/s
+
+        const baseSpeedKmph = 5; // 5 km/h walking speed as base
+        const speedKmph = baseSpeedKmph * this.simSpeed;
+        const distanceStepKm = (speedKmph * deltaTime) / 3600;
+
+        // Current distance
+        let currentDistance = this.simProgress * this.totalDistance;
+        currentDistance += distanceStepKm;
+
+        this.simProgress = currentDistance / this.totalDistance;
+
+        if (this.simProgress >= 1.0) {
+            this.simProgress = 1.0;
+            this.updateSimulationUI(this.totalDistance);
+            this.pauseSimulation(); // End of simulation
+
+            // Update button state (manual trigger required as UI is separate)
+            const playBtn = document.getElementById('sim-play-btn');
+            if(playBtn) playBtn.textContent = '▶ 재생'; // Reset button text
+
+            return;
+        }
+
+        this.updateSimulationUI(currentDistance);
+        this.simFrameId = requestAnimationFrame((t) => this.animateSimulation(t));
+    }
+
+    updateSimulationUI(distance) {
+        const point = this.getPointAtDistance(distance);
+        if (!point) return;
+
+        // 1. Update Marker on Map
+        if (this.map) {
+            if (!this.simMarker) {
+                const icon = L.divIcon({
+                    html: '<div style="font-size:24px;">🏃</div>',
+                    className: 'sim-runner-icon',
+                    iconSize: [30, 30],
+                    iconAnchor: [15, 15]
+                });
+                this.simMarker = L.marker([point.lat, point.lon], { icon, zIndexOffset: 1000 }).addTo(this.map);
+            } else {
+                this.simMarker.setLatLng([point.lat, point.lon]);
+            }
+
+            // Pan map if marker goes out of bounds (optional, keeps view centered)
+            if (!this.map.getBounds().contains([point.lat, point.lon])) {
+               this.map.panTo([point.lat, point.lon]);
+            }
+        }
+
+        // 2. Update Chart Line
+        if (this.chart) {
+            // Find index closest to distance
+            const index = this.gpxData.findIndex(p => p.distance >= distance);
+
+            if (index !== -1) {
+                this.chart.options.plugins.annotation = {
+                    annotations: {
+                        line1: {
+                            type: 'line',
+                            scaleID: 'x',
+                            value: index,
+                            borderColor: '#ef4444',
+                            borderWidth: 2,
+                            label: {
+                                display: true,
+                                content: '🏃',
+                                position: 'start',
+                                backgroundColor: 'rgba(255,255,255,0.8)',
+                                color: '#000',
+                                font: { size: 16 }
+                            }
+                        }
+                    }
+                };
+                // Optimization: update 'none' to avoid full re-render animation
+                this.chart.update('none');
+            }
+        }
+
+        // 3. Update Text
+        const distEl = document.getElementById('sim-dist');
+        if(distEl) distEl.textContent = distance.toFixed(1);
+    }
+
+    getPointAtDistance(targetDistance) {
+        // Find segment
+        for (let i = 0; i < this.gpxData.length - 1; i++) {
+            const p1 = this.gpxData[i];
+            const p2 = this.gpxData[i + 1];
+
+            if (targetDistance >= p1.distance && targetDistance <= p2.distance) {
+                const segmentDist = p2.distance - p1.distance;
+                if (segmentDist === 0) return p1;
+
+                const ratio = (targetDistance - p1.distance) / segmentDist;
+
+                return {
+                    lat: p1.lat + (p2.lat - p1.lat) * ratio,
+                    lon: p1.lon + (p2.lon - p1.lon) * ratio,
+                    elevation: p1.elevation + (p2.elevation - p1.elevation) * ratio
+                };
+            }
+        }
+        return this.gpxData[this.gpxData.length - 1];
+    }
+
+    // ===========================
+    // Navigation Logic
+    // ===========================
 
     // Start navigation mode
     startNavigation() {
