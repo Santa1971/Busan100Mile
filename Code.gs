@@ -248,8 +248,8 @@ function getAdminData(password) {
 
   const adminsSheet = getSheet(SHEETS.ADMINS);
   if (!adminsSheet) {
-    // If Admin sheet doesn't exist, fallback or fail safe
-    return jsonResponse({ error: 'Configuration Error' });
+    // If Admin sheet doesn't exist, prompt user to setup
+    return jsonResponse({ error: 'Admins sheet not found. Please run setupAdmin.' });
   }
 
   const data = adminsSheet.getDataRange().getValues();
@@ -419,20 +419,32 @@ function updateStatus(e) {
   return jsonResponse({ success: false, error: 'Not found' });
 }
 
+// SECURITY WARNING: This function is public. In a strict production environment,
+// remove this function or protect it with a secret token after initial setup.
 function setupAdmin(username, password) {
   if (!username || !password) {
     return jsonResponse({ error: 'Username and password required' });
   }
 
-  const sheet = getSheet(SHEETS.ADMINS);
+  let sheet = getSheet(SHEETS.ADMINS);
+
+  // If sheet doesn't exist, create it
+  if (!sheet) {
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    sheet = ss.insertSheet(SHEETS.ADMINS);
+    sheet.appendRow(['username', 'password_hash']);
+  }
+
   const data = sheet.getDataRange().getValues();
   const hash = computeHash(password);
 
   // Check if user exists
-  for (let i = 1; i < data.length; i++) {
-    if (data[i][0] === username) {
-      sheet.getRange(i + 1, 2).setValue(hash);
-      return jsonResponse({ success: true, message: 'Password updated' });
+  if (data.length > 1) {
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][0] === username) {
+        sheet.getRange(i + 1, 2).setValue(hash);
+        return jsonResponse({ success: true, message: 'Password updated' });
+      }
     }
   }
 
