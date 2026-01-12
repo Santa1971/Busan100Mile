@@ -464,11 +464,39 @@
             ctx.font = '20px sans-serif';
             ctx.fillText('2026.03.01', 300, 350);
 
-            // Download
-            const link = document.createElement('a');
-            link.download = `BIB_${name}.png`;
-            link.href = canvas.toDataURL();
-            link.click();
+            // Mobile compatibility: Show image for long-press saving
+            const dataUrl = canvas.toDataURL();
+
+            // Create a modal to show the image
+            const modal = document.createElement('div');
+            modal.style.position = 'fixed';
+            modal.style.inset = '0';
+            modal.style.backgroundColor = 'rgba(0,0,0,0.9)';
+            modal.style.zIndex = '9999';
+            modal.style.display = 'flex';
+            modal.style.flexDirection = 'column';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+            modal.style.padding = '20px';
+
+            modal.innerHTML = `
+                <div style="color:white; margin-bottom:20px; text-align:center;">
+                    <h3 style="margin-bottom:8px;">🎽 모바일 배번호</h3>
+                    <p style="font-size:0.9rem; color:#cbd5e1;">이미지를 길게 눌러 저장하세요</p>
+                </div>
+                <img src="${dataUrl}" style="max-width:100%; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.5);">
+                <button onclick="this.parentElement.remove()" style="margin-top:24px; padding:12px 32px; background:#ef4444; border:none; border-radius:8px; color:white; font-weight:bold; cursor:pointer;">닫기</button>
+            `;
+
+            document.body.appendChild(modal);
+
+            // Attempt automatic download for desktop
+            if (!/Android|iPhone/i.test(navigator.userAgent)) {
+                const link = document.createElement('a');
+                link.download = `BIB_${name}.png`;
+                link.href = dataUrl;
+                link.click();
+            }
         }
     </script>
 </body>

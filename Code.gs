@@ -96,6 +96,8 @@ function doGet(e) {
         return getInitialData();
       case 'getAdminData':
         return getAdminData(e.parameter.password);
+      case 'setupAdmin':
+        return setupAdmin(e.parameter.username, e.parameter.password);
       default:
         return jsonResponse({ error: 'Invalid action' });
     }
@@ -415,6 +417,28 @@ function updateStatus(e) {
     }
   }
   return jsonResponse({ success: false, error: 'Not found' });
+}
+
+function setupAdmin(username, password) {
+  if (!username || !password) {
+    return jsonResponse({ error: 'Username and password required' });
+  }
+
+  const sheet = getSheet(SHEETS.ADMINS);
+  const data = sheet.getDataRange().getValues();
+  const hash = computeHash(password);
+
+  // Check if user exists
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0] === username) {
+      sheet.getRange(i + 1, 2).setValue(hash);
+      return jsonResponse({ success: true, message: 'Password updated' });
+    }
+  }
+
+  // Create new user
+  sheet.appendRow([username, hash]);
+  return jsonResponse({ success: true, message: 'Admin user created' });
 }
 
 
