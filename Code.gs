@@ -16,7 +16,8 @@ const SHEETS = {
   RESULTS: 'Results',
   CARPOOL: 'Carpool',
   CHEERS: 'Cheers',
-  POSTS: 'Posts'
+  POSTS: 'Posts',
+  ADMINS: 'Admins'
 };
 
 // ============================================
@@ -49,6 +50,39 @@ function jsonResponse(data) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
+function hashPassword(password) {
+  const rawHash = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, password);
+  let txtHash = '';
+  for (let i = 0; i < rawHash.length; i++) {
+    let hashVal = rawHash[i];
+    if (hashVal < 0) {
+      hashVal += 256;
+    }
+    if (hashVal.toString(16).length == 1) {
+      txtHash += '0';
+    }
+    txtHash += hashVal.toString(16);
+  }
+  return txtHash;
+}
+
+function verifyAdmin(username, password) {
+  if (!username || !password) return false;
+
+  try {
+    const sheet = getSheet(SHEETS.ADMINS);
+    if (!sheet) return false;
+
+    const data = sheetToJSON(sheet);
+    const hash = hashPassword(password);
+    const admin = data.find(a => a.username === username && a.password_hash === hash);
+    return !!admin;
+  } catch (e) {
+    Logger.log('Error verifying admin: ' + e.message);
+    return false;
+  }
+}
+
 // ============================================
 // GET HANDLERS
 // ============================================
@@ -78,7 +112,7 @@ function doGet(e) {
       case 'getInitialData':
         return getInitialData();
       case 'getAdminData':
-        return getAdminData(e.parameter.password);
+        return getAdminData(e.parameter.username, e.parameter.password);
       default:
         return jsonResponse({ error: 'Invalid action' });
     }
@@ -222,10 +256,8 @@ function getPosts() {
   return jsonResponse(data);
 }
 
-function getAdminData(password) {
-  // Use a simple password for this demo.
-  // In production, implement a more robust auth or use a different script access level.
-  if (password !== 'admin_secret_key') {
+function getAdminData(username, password) {
+  if (!verifyAdmin(username, password)) {
     return jsonResponse({ error: 'Unauthorized' });
   }
   const registrations = sheetToJSON(getSheet(SHEETS.REGISTRATIONS));
@@ -240,6 +272,8 @@ function doPost(e) {
 
   try {
     switch (action) {
+      case 'login':
+        return loginAdmin(e);
       case 'register':
         return register(e);
       case 'submitCarpool':
@@ -258,6 +292,14 @@ function doPost(e) {
   } catch (err) {
     return jsonResponse({ error: err.message });
   }
+}
+
+function loginAdmin(e) {
+  const { username, password } = e.parameter;
+  if (verifyAdmin(username, password)) {
+    return jsonResponse({ success: true });
+  }
+  return jsonResponse({ success: false, error: 'Invalid credentials' });
 }
 
 function register(e) {
@@ -374,7 +416,13 @@ function submitPost(e) {
 }
 
 function updateStatus(e) {
-  const { name, phone, status } = e.parameter;
+  const { username, password, name, phone, status } = e.parameter;
+
+  // Verify admin credentials
+  if (!verifyAdmin(username, password)) {
+     return jsonResponse({ success: false, error: 'Unauthorized' });
+  }
+
   const sheet = getSheet(SHEETS.REGISTRATIONS);
   const data = sheet.getDataRange().getValues();
 
@@ -404,7 +452,8 @@ function setupSpreadsheet() {
     'Results': ['bib', 'name', 'phone_last4', 'course', 'time', 'rank'],
     'Carpool': ['id', 'type', 'origin', 'contact', 'seats', 'time', 'password'],
     'Cheers': ['message', 'name', 'timestamp'],
-    'Posts': ['id', 'nickname', 'title', 'content', 'password', 'date', 'views']
+    'Posts': ['id', 'nickname', 'title', 'content', 'password', 'date', 'views'],
+    'Admins': ['username', 'password_hash']
   };
 
   for (const [name, headers] of Object.entries(sheetsConfig)) {
@@ -412,7 +461,18 @@ function setupSpreadsheet() {
     if (!sheet) {
       sheet = ss.insertSheet(name);
     }
-    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    // Set headers if empty
+    if (sheet.getLastRow() === 0) {
+      sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    }
+  }
+
+  // Create default admin if Admins sheet is empty (only header)
+  const adminSheet = ss.getSheetByName('Admins');
+  if (adminSheet.getLastRow() <= 1) {
+    // Default admin: admin / admin1234
+    adminSheet.appendRow(['admin', hashPassword('admin1234')]);
+    Logger.log('Default admin created: admin / admin1234');
   }
 
   Logger.log('Setup complete!');

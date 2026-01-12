@@ -76,6 +76,7 @@
         <div id="login-overlay" style="position:fixed; inset:0; background:#0a0a0f; z-index:1000; display:flex; align-items:center; justify-content:center;">
             <div class="glass-card" style="padding:40px; width:100%; max-width:400px; text-align:center;">
                 <h2 style="margin-bottom:24px;">관리자 로그인</h2>
+                <input type="text" id="admin-id" placeholder="아이디" class="form-input" style="margin-bottom:16px;">
                 <input type="password" id="admin-pw" placeholder="비밀번호" class="form-input" style="margin-bottom:16px;">
                 <button onclick="checkAdmin()" class="btn-primary" style="width:100%;">접속</button>
             </div>
@@ -148,42 +149,58 @@
 
     <script src="js/app.js"></script>
     <script>
-        // Simple client-side auth for demo (In production, verify with backend)
-        function checkAdmin() {
+        // Admin Credentials Storage (In-memory)
+        let adminCreds = {
+            username: '',
+            password: ''
+        };
+
+        async function checkAdmin() {
+            const id = document.getElementById('admin-id').value;
             const pw = document.getElementById('admin-pw').value;
-            if (pw === 'admin1234') { // Demo password
-                document.getElementById('login-overlay').style.display = 'none';
-                document.getElementById('admin-content').style.display = 'block';
-                loadAdminData();
-                startScanner();
-            } else {
-                alert('비밀번호가 올바르지 않습니다.');
+
+            if (!id || !pw) {
+                alert('아이디와 비밀번호를 입력해주세요.');
+                return;
+            }
+
+            try {
+                const res = await fetchData('login', { username: id, password: pw }, 'POST');
+                if (res.success) {
+                    adminCreds.username = id;
+                    adminCreds.password = pw;
+                    document.getElementById('login-overlay').style.display = 'none';
+                    document.getElementById('admin-content').style.display = 'block';
+                    loadAdminData();
+                    startScanner();
+                } else {
+                    alert('로그인 실패: ' + (res.error || '아이디 또는 비밀번호가 잘못되었습니다.'));
+                }
+            } catch (e) {
+                console.error(e);
+                alert('서버 통신 오류');
             }
         }
 
         let participants = [];
 
         async function loadAdminData() {
-            // Fetch all registrations (requires admin action in backend)
-            // Since we don't have a secure backend Auth, we will add a 'getAdminData' action
-            // that checks a password sent in params (not secure for real Prod but ok for this demo level).
-
             try {
-                const res = await fetchData('getAdminData', { password: 'admin_secret_key' });
+                const res = await fetchData('getAdminData', {
+                    username: adminCreds.username,
+                    password: adminCreds.password
+                });
+
                 if (res && res.registrations) {
                     participants = res.registrations;
                     updateStats();
                     renderList();
+                } else if (res.error) {
+                    alert('데이터 로드 실패: ' + res.error);
                 }
             } catch (e) {
                 console.error(e);
-                // Mock data if fetch fails
-                participants = [
-                    { name: '김철수', course: '100M', phone: '010-1234-5678', status: '신청완료' },
-                    { name: '이영희', course: '50M', phone: '010-9876-5432', status: '체크인완료' }
-                ];
-                updateStats();
-                renderList();
+                alert('데이터를 불러오는 중 오류가 발생했습니다.');
             }
         }
 
@@ -233,7 +250,13 @@
 
             try {
                 // Call backend (POST)
-                const res = await fetchData('updateStatus', { name, phone, status: '체크인완료' }, 'POST');
+                const res = await fetchData('updateStatus', {
+                    username: adminCreds.username,
+                    password: adminCreds.password,
+                    name: name,
+                    phone: phone,
+                    status: '체크인완료'
+                }, 'POST');
 
                 if (res.success) {
                     // Optimistic update
