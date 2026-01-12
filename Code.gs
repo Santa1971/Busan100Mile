@@ -163,7 +163,7 @@ function getCarpool() {
   // Mask phone numbers for privacy
   const masked = data.map(item => ({
     ...item,
-    contact: item.contact ? item.contact.replace(/(\d{3})-?\d{4}-?(\d{4})/, '$1-****-$2') : ''
+    contact: item.contact ? String(item.contact).replace(/(\d{3})-?\d{4}-?(\d{4})/, '$1-****-$2') : ''
   }));
   return jsonResponse(masked);
 }
@@ -176,7 +176,7 @@ function checkStatus(name, phone4) {
 
   const data = sheetToJSON(getSheet(SHEETS.REGISTRATIONS));
   const match = data.find(r =>
-    r.name === name && r.phone && r.phone.slice(-4) === phone4
+    r.name === name && r.phone && String(r.phone).slice(-4) === phone4
   );
 
   if (match) {
@@ -266,8 +266,9 @@ function register(e) {
   const data = sheet.getDataRange().getValues();
 
   // Check for duplicate registration (same name + phone)
+  // Normalize phone comparison (treat as string)
   const existingRow = data.slice(1).findIndex(row =>
-    row[1] === p.name && row[3] === p.phone && row[8] !== '취소'
+    row[1] === p.name && String(row[3]).replace(/[^0-9]/g, '') === String(p.phone).replace(/[^0-9]/g, '') && row[8] !== '취소'
   );
 
   if (existingRow !== -1) {
@@ -306,8 +307,8 @@ function cancelRegistration(e) {
 
   // Find the row (col 1 = name, col 3 = phone - match last 4 digits)
   for (let i = 1; i < data.length; i++) {
-    const phone = data[i][3] || '';
-    if (data[i][1] === name && phone.slice(-4) === phone4 && data[i][8] !== '취소') {
+    const phone = data[i][3];
+    if (data[i][1] === name && String(phone).slice(-4) === phone4 && data[i][8] !== '취소') {
       // Update status to '취소' (column 9, index 8)
       sheet.getRange(i + 1, 9).setValue('취소');
       return jsonResponse({ success: true, message: '신청이 취소되었습니다.' });
@@ -376,7 +377,7 @@ function updateStatus(e) {
 
   // The phone sent here is full phone number
   for (let i = 1; i < data.length; i++) {
-    if (data[i][1] === name && data[i][3] === phone) { // Name & Phone match
+    if (data[i][1] === name && String(data[i][3]).replace(/[^0-9]/g, '') === String(phone).replace(/[^0-9]/g, '')) { // Name & Phone match
       sheet.getRange(i + 1, 9).setValue(status); // Update Status col (index 8, 1-based is 9)
       return jsonResponse({ success: true });
     }
