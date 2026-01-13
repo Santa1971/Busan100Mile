@@ -176,7 +176,7 @@ function checkStatus(name, phone4) {
 
   const data = sheetToJSON(getSheet(SHEETS.REGISTRATIONS));
   const match = data.find(r =>
-    r.name === name && r.phone && r.phone.slice(-4) === phone4
+    r.name === name && r.phone && String(r.phone).replace(/-/g, '').slice(-4) === phone4
   );
 
   if (match) {
@@ -200,7 +200,7 @@ function getResult(name, phone4) {
 
   const data = sheetToJSON(getSheet(SHEETS.RESULTS));
   const match = data.find(r =>
-    r.name === name && String(r.phone_last4) === String(phone4)
+    r.name === name && String(r.phone_last4).trim() === String(phone4).trim()
   );
 
   if (match) {
@@ -283,11 +283,11 @@ function register(e) {
     new Date(),
     sanitize(p.name),
     sanitize(p.birth),
-    sanitize(p.phone),
+    "'" + sanitize(p.phone), // Force string format
     sanitize(p.course),
     sanitize(p.bloodType),
     sanitize(p.emergencyContact),
-    sanitize(p.emergencyPhone),
+    "'" + sanitize(p.emergencyPhone), // Force string format
     '신청완료'
   ];
 
@@ -325,7 +325,7 @@ function submitCarpool(e) {
     Date.now(),
     sanitize(p.type),
     sanitize(p.origin),
-    sanitize(p.contact),
+    "'" + sanitize(p.contact), // Force string format
     sanitize(p.seats),
     sanitize(p.time),
     sanitize(p.password) // Hashed in production
@@ -376,7 +376,8 @@ function updateStatus(e) {
 
   // The phone sent here is full phone number
   for (let i = 1; i < data.length; i++) {
-    if (data[i][1] === name && data[i][3] === phone) { // Name & Phone match
+    const sheetPhone = String(data[i][3]);
+    if (data[i][1] === name && sheetPhone === phone) { // Name & Phone match
       sheet.getRange(i + 1, 9).setValue(status); // Update Status col (index 8, 1-based is 9)
       return jsonResponse({ success: true });
     }
