@@ -175,9 +175,12 @@ function checkStatus(name, phone4) {
   }
 
   const data = sheetToJSON(getSheet(SHEETS.REGISTRATIONS));
-  const match = data.find(r =>
-    r.name === name && r.phone && r.phone.slice(-4) === phone4
-  );
+  const match = data.find(r => {
+    if (r.name !== name) return false;
+    // Robust phone check: convert to string, remove non-digits
+    const p = String(r.phone || '').replace(/[^0-9]/g, '');
+    return p.length >= 4 && p.slice(-4) === phone4;
+  });
 
   if (match) {
     return jsonResponse({
@@ -265,10 +268,14 @@ function register(e) {
   const sheet = getSheet(SHEETS.REGISTRATIONS);
   const data = sheet.getDataRange().getValues();
 
+  // Normalize phone for duplicate check
+  const pPhoneNorm = String(p.phone).replace(/[^0-9]/g, '');
+
   // Check for duplicate registration (same name + phone)
-  const existingRow = data.slice(1).findIndex(row =>
-    row[1] === p.name && row[3] === p.phone && row[8] !== '취소'
-  );
+  const existingRow = data.slice(1).findIndex(row => {
+    const rowPhoneNorm = String(row[3]).replace(/[^0-9]/g, '');
+    return row[1] === p.name && rowPhoneNorm === pPhoneNorm && row[8] !== '취소';
+  });
 
   if (existingRow !== -1) {
     return jsonResponse({
@@ -283,7 +290,7 @@ function register(e) {
     new Date(),
     sanitize(p.name),
     sanitize(p.birth),
-    sanitize(p.phone),
+    "'" + sanitize(p.phone), // Force String format with leading quote
     sanitize(p.course),
     sanitize(p.bloodType),
     sanitize(p.emergencyContact),
@@ -306,8 +313,8 @@ function cancelRegistration(e) {
 
   // Find the row (col 1 = name, col 3 = phone - match last 4 digits)
   for (let i = 1; i < data.length; i++) {
-    const phone = data[i][3] || '';
-    if (data[i][1] === name && phone.slice(-4) === phone4 && data[i][8] !== '취소') {
+    const phone = String(data[i][3] || '').replace(/[^0-9]/g, '');
+    if (data[i][1] === name && phone.length >= 4 && phone.slice(-4) === phone4 && data[i][8] !== '취소') {
       // Update status to '취소' (column 9, index 8)
       sheet.getRange(i + 1, 9).setValue('취소');
       return jsonResponse({ success: true, message: '신청이 취소되었습니다.' });
@@ -374,9 +381,27 @@ function updateStatus(e) {
   const sheet = getSheet(SHEETS.REGISTRATIONS);
   const data = sheet.getDataRange().getValues();
 
+  const targetPhone = String(phone).replace(/[^0-9]/g, '');
+
   // The phone sent here is full phone number
   for (let i = 1; i < data.length; i++) {
-    if (data[i][1] === name && data[i][3] === phone) { // Name & Phone match
+    const rowPhone = String(data[i][3] || '').replace(/[^0-9]/g, '');
+
+    // Check name match first
+    if (data[i][1] !== name) continue;
+
+    // Phone match: Exact match OR (if one has 11 digits and other has 10, check if one is substring of other)
+    // E.g. 01012345678 (11) vs 1012345678 (10)
+    let phoneMatch = false;
+    if (rowPhone === targetPhone) {
+        phoneMatch = true;
+    } else if (Math.abs(rowPhone.length - targetPhone.length) === 1) {
+        // Handle leading zero drop issue
+        if (rowPhone.length > targetPhone.length && rowPhone.endsWith(targetPhone)) phoneMatch = true;
+        if (targetPhone.length > rowPhone.length && targetPhone.endsWith(rowPhone)) phoneMatch = true;
+    }
+
+    if (phoneMatch) {
       sheet.getRange(i + 1, 9).setValue(status); // Update Status col (index 8, 1-based is 9)
       return jsonResponse({ success: true });
     }
