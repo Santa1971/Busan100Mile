@@ -91,7 +91,10 @@ function getConfig() {
   const sheet = getSheet(SHEETS.CONFIG);
   const data = sheet.getDataRange().getValues();
   const config = {};
-  data.slice(1).forEach(row => config[row[0]] = row[1]);
+  data.slice(1).forEach(row => {
+    const key = String(row[0]).trim();
+    if (key) config[key] = row[1];
+  });
   return jsonResponse(config);
 }
 
@@ -110,7 +113,10 @@ function getInitialData() {
   // Config
   const configData = ss.getSheetByName(SHEETS.CONFIG).getDataRange().getValues();
   const config = {};
-  configData.slice(1).forEach(row => config[row[0]] = row[1]);
+  configData.slice(1).forEach(row => {
+    const key = String(row[0]).trim();
+    if (key) config[key] = row[1];
+  });
 
   // Notices
   const notices = sheetToJSON(ss.getSheetByName(SHEETS.NOTICES));
