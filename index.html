@@ -1277,7 +1277,7 @@
 
             if (!startDate || !endDate) {
                 // 날짜 설정이 없으면 기본값 표시
-                statusEl.textContent = config.registrationOpen === 'true' ? '접수중' : '접수마감';
+                statusEl.textContent = (String(config.registrationOpen) === 'true' || config.registrationOpen === true) ? '접수중' : '접수마감';
                 return;
             }
 
