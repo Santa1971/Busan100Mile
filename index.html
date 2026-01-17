@@ -9,6 +9,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Nanum+Brush+Script&display=swap"
         rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         * {
@@ -756,8 +757,8 @@
             font-size: 1.25rem;
         }
 
-        /* SOS 버튼 */
-        .sos-btn {
+        /* SOS 버튼 (Location Share) */
+        .location-share-btn {
             position: fixed;
             bottom: 24px;
             right: 24px;
@@ -773,9 +774,12 @@
             z-index: 1000;
             box-shadow: 0 4px 20px rgba(239, 68, 68, 0.5);
             transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .sos-btn:hover {
+        .location-share-btn:hover {
             transform: scale(1.1);
         }
 
@@ -906,7 +910,7 @@
     <nav class="nav-desktop">
         <div class="nav-container">
             <a href="index.html" class="nav-logo">
-                <img src="assets/main_logo.jpg" alt="갈맷길 100M" class="logo-img">
+                <img src="assets/main_logo.jpg" alt="갈맷길 100M" class="logo-img" onerror="this.style.display='none'">
                 <span>BUSAN 100M</span>
             </a>
             <ul class="nav-links">
