@@ -145,6 +145,19 @@ async function fetchData(action, params = {}, method = 'GET') {
     }
 
     const res = await fetch(url, options);
+
+    if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const contentType = res.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+         // This happens if GAS returns an HTML error page (e.g. script error)
+         const text = await res.text();
+         console.error("Received non-JSON response:", text);
+         throw new Error("Invalid server response (not JSON)");
+    }
+
     const data = await res.json();
 
     // 캐시 저장
