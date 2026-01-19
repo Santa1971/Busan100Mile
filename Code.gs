@@ -154,7 +154,7 @@ function getCheers() {
   const sheet = getSheet(SHEETS.CHEERS);
   const data = sheet.getDataRange().getValues();
   // Skip header row, return only message column
-  const cheers = data.slice(1).map(row => row[0]).filter(msg => msg && msg.trim());
+  const cheers = data.slice(1).map(row => row[0]).filter(msg => msg && String(msg).trim());
   return jsonResponse(cheers);
 }
 
@@ -163,7 +163,7 @@ function getCarpool() {
   // Mask phone numbers for privacy
   const masked = data.map(item => ({
     ...item,
-    contact: item.contact ? item.contact.replace(/(\d{3})-?\d{4}-?(\d{4})/, '$1-****-$2') : ''
+    contact: item.contact ? String(item.contact).replace(/(\d{3})-?\d{4}-?(\d{4})/, '$1-****-$2') : ''
   }));
   return jsonResponse(masked);
 }
@@ -176,7 +176,7 @@ function checkStatus(name, phone4) {
 
   const data = sheetToJSON(getSheet(SHEETS.REGISTRATIONS));
   const match = data.find(r =>
-    r.name === name && r.phone && r.phone.slice(-4) === phone4
+    r.name === name && r.phone && String(r.phone).slice(-4) === phone4
   );
 
   if (match) {
@@ -306,7 +306,7 @@ function cancelRegistration(e) {
 
   // Find the row (col 1 = name, col 3 = phone - match last 4 digits)
   for (let i = 1; i < data.length; i++) {
-    const phone = data[i][3] || '';
+    const phone = String(data[i][3] || '');
     if (data[i][1] === name && phone.slice(-4) === phone4 && data[i][8] !== '취소') {
       // Update status to '취소' (column 9, index 8)
       sheet.getRange(i + 1, 9).setValue('취소');
@@ -376,7 +376,7 @@ function updateStatus(e) {
 
   // The phone sent here is full phone number
   for (let i = 1; i < data.length; i++) {
-    if (data[i][1] === name && data[i][3] === phone) { // Name & Phone match
+    if (data[i][1] === name && String(data[i][3]) === String(phone)) { // Name & Phone match
       sheet.getRange(i + 1, 9).setValue(status); // Update Status col (index 8, 1-based is 9)
       return jsonResponse({ success: true });
     }

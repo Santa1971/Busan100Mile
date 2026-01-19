@@ -136,7 +136,9 @@ async function fetchData(action, params = {}, method = 'GET') {
     let options = { method: method };
 
     if (method === 'GET') {
-        url += `&${new URLSearchParams(params)}`;
+        if (Object.keys(params).length > 0) {
+            url += `&${new URLSearchParams(params)}`;
+        }
     } else {
         options.body = new URLSearchParams({ action, ...params });
         // Google Apps Script doPost receives form data best this way or simple params query string even in POST
