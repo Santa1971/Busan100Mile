@@ -314,11 +314,7 @@
                 e.target.reset();
             } else {
                 try {
-                    const params = new URLSearchParams(data);
-                    const response = await fetch(`${API_URL}?action=register&${params.toString()}`, {
-                        method: 'POST'
-                    });
-                    const result = await response.json();
+                    const result = await fetchData('register', data, 'POST');
                     if (result.success) {
                         alert('🎉 참가 신청이 완료되었습니다!\n\n' + result.message);
                         e.target.reset();

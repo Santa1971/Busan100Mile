@@ -136,7 +136,10 @@ async function fetchData(action, params = {}, method = 'GET') {
     let options = { method: method };
 
     if (method === 'GET') {
-        url += `&${new URLSearchParams(params)}`;
+        const queryParams = new URLSearchParams(params).toString();
+        if (queryParams) {
+            url += `&${queryParams}`;
+        }
     } else {
         options.body = new URLSearchParams({ action, ...params });
         // Google Apps Script doPost receives form data best this way or simple params query string even in POST
@@ -145,6 +148,18 @@ async function fetchData(action, params = {}, method = 'GET') {
     }
 
     const res = await fetch(url, options);
+    if (!res.ok) {
+        throw new Error(`HTTP Error: ${res.status}`);
+    }
+
+    // Check if response is JSON (GAS sometimes returns HTML error pages)
+    const contentType = res.headers.get("content-type");
+    if (contentType && !contentType.includes("application/json")) {
+        const text = await res.text();
+        console.error("Non-JSON response:", text);
+        throw new Error("Invalid response from server");
+    }
+
     const data = await res.json();
 
     // 캐시 저장
