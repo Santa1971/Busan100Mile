@@ -23,7 +23,9 @@ const SHEETS = {
 // UTILITY FUNCTIONS
 // ============================================
 function getSheet(name) {
-  return SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(name);
+  const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(name);
+  if (!sheet) throw new Error('Sheet not found: ' + name);
+  return sheet;
 }
 
 function sheetToJSON(sheet) {
@@ -176,7 +178,7 @@ function checkStatus(name, phone4) {
 
   const data = sheetToJSON(getSheet(SHEETS.REGISTRATIONS));
   const match = data.find(r =>
-    r.name === name && r.phone && r.phone.slice(-4) === phone4
+    r.name === name && String(r.phone || '').slice(-4) === phone4
   );
 
   if (match) {
@@ -200,7 +202,7 @@ function getResult(name, phone4) {
 
   const data = sheetToJSON(getSheet(SHEETS.RESULTS));
   const match = data.find(r =>
-    r.name === name && String(r.phone_last4) === String(phone4)
+    r.name === name && String(r.phone_last4 || '') === String(phone4)
   );
 
   if (match) {
@@ -267,7 +269,7 @@ function register(e) {
 
   // Check for duplicate registration (same name + phone)
   const existingRow = data.slice(1).findIndex(row =>
-    row[1] === p.name && row[3] === p.phone && row[8] !== '취소'
+    row[1] === p.name && String(row[3]) === p.phone && row[8] !== '취소'
   );
 
   if (existingRow !== -1) {
@@ -306,7 +308,7 @@ function cancelRegistration(e) {
 
   // Find the row (col 1 = name, col 3 = phone - match last 4 digits)
   for (let i = 1; i < data.length; i++) {
-    const phone = data[i][3] || '';
+    const phone = String(data[i][3] || '');
     if (data[i][1] === name && phone.slice(-4) === phone4 && data[i][8] !== '취소') {
       // Update status to '취소' (column 9, index 8)
       sheet.getRange(i + 1, 9).setValue('취소');
@@ -376,7 +378,7 @@ function updateStatus(e) {
 
   // The phone sent here is full phone number
   for (let i = 1; i < data.length; i++) {
-    if (data[i][1] === name && data[i][3] === phone) { // Name & Phone match
+    if (data[i][1] === name && String(data[i][3]) === phone) { // Name & Phone match
       sheet.getRange(i + 1, 9).setValue(status); // Update Status col (index 8, 1-based is 9)
       return jsonResponse({ success: true });
     }
