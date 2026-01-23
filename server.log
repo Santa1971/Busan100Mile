@@ -1,0 +1,6 @@
+127.0.0.1 - - [23/Jan/2026 23:30:25] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jan/2026 23:30:25] "GET /assets/main_logo.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jan/2026 23:30:25] "GET /assets/gallery_1.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jan/2026 23:30:25] "GET /assets/gallery_2.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jan/2026 23:30:25] "GET /js/app.js HTTP/1.1" 200 -
+127.0.0.1 - - [23/Jan/2026 23:30:25] "GET /assets/hero_dark_bg.jpg HTTP/1.1" 200 -
