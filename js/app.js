@@ -136,7 +136,8 @@ async function fetchData(action, params = {}, method = 'GET') {
     let options = { method: method };
 
     if (method === 'GET') {
-        url += `&${new URLSearchParams(params)}`;
+        const query = new URLSearchParams(params).toString();
+        if (query) url += `&${query}`;
     } else {
         options.body = new URLSearchParams({ action, ...params });
         // Google Apps Script doPost receives form data best this way or simple params query string even in POST
@@ -300,9 +301,6 @@ function handleLocationShare() {
 
             // 카카오톡 공유 메시지
             const message = `📍 현재 위치 알림\n\n⏰ 시간: ${timeStr}\n📌 위치: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}\n🗺️ 지도: ${mapUrl}`;
-
-            // 카카오톡 공유 (모바일)
-            const kakaoShareUrl = `https://open.kakao.com/o/XXXXX?text=${encodeURIComponent(message)}`;
 
             // 공유 방법 선택
             if (navigator.share) {
