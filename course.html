@@ -229,34 +229,14 @@
                 try {
                     const gpxText = await file.text();
 
-                    // Parse uploaded GPX
-                    const parser = new DOMParser();
-                    const gpxDoc = parser.parseFromString(gpxText, 'text/xml');
-                    const trackPoints = gpxDoc.querySelectorAll('trkpt');
+                    // Parse uploaded GPX using the class method (ensures distance calculation)
+                    gpxNav.parseGPX(gpxText);
 
-                    if (trackPoints.length === 0) {
-                        throw new Error('GPX 파일에 경로 데이터가 없습니다.');
+                    if (gpxNav.gpxData.length === 0) {
+                        throw new Error('GPX 파일에 유효한 경로 데이터가 없습니다.');
                     }
 
-                    // Clear existing data and load new GPX
-                    gpxNav.gpxData = [];
-                    trackPoints.forEach(pt => {
-                        gpxNav.gpxData.push({
-                            lat: parseFloat(pt.getAttribute('lat')),
-                            lon: parseFloat(pt.getAttribute('lon')),
-                            ele: parseFloat(pt.querySelector('ele')?.textContent || 0)
-                        });
-                    });
-
-                    // Reload map and chart with new GPX data
-                    const checkpoints = await fetchData('getCheckpoints');
-
-                    // Clear existing map layers
-                    if (gpxNav.routeLayer) {
-                        gpxNav.map.removeLayer(gpxNav.routeLayer);
-                    }
-
-                    // Draw new route
+                    // Draw new route (automatically removes old route)
                     gpxNav.drawRoute();
 
                     // Fit map to new route
@@ -266,7 +246,7 @@
                     // Update chart
                     gpxNav.initChart('elevation-chart');
 
-                    statusEl.textContent = `✅ "${file.name}" 로드 완료! (${trackPoints.length}개 포인트)`;
+                    statusEl.textContent = `✅ "${file.name}" 로드 완료! (${gpxNav.gpxData.length}개 포인트)`;
                     statusEl.style.color = 'var(--green-500)';
 
                 } catch (err) {

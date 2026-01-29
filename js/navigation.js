@@ -376,6 +376,10 @@ class GPXNavigation {
         const ctx = document.getElementById(canvasId);
         if (!ctx) return null;
 
+        if (this.chart) {
+            this.chart.destroy();
+        }
+
         const labels = this.gpxData.map(p => p.distance.toFixed(1) + 'km');
         const elevations = this.gpxData.map(p => p.elevation);
 
